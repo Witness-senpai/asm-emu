@@ -1,22 +1,26 @@
 lang -> expr*
-expr -> common | arifetic | logical | jump
+expr -> (NLINE | common | arifetic | logical | jump | label)
 
-arifetic -> arif_op | sh
-logical -> log_op | comp_op
-common -> mov | pop | push
+common -> (mov | pop | push) NLINE
+arifetic -> arif_op NLINE
+logical -> (log_op | comp_op | shift_op) NLINE
+jump -> jmp_op (addr | LABEL) NLINE
+label -> LABEL COLON NLINE
 
 mov -> 'MOV' (addr | reg) (addr | reg | literal)
-pop -> 'POP' reg
-push -> 'PUSH' (literal | reg)
+pop -> 'POP' (addr | reg)
+push -> 'PUSH' (addr | literal | reg)
 
 arif_op -> 'ADD' | 'SUB'
-shift_op -> 'SHL' | 'SHR'
 log_op -> 'AND' | 'OR' | 'XOR' | 'NOR' | 'NOT'
 comp_op -> 'CMP'
+shift_op -> 'SHL' | 'SHR'
 
-jump -> jmp_op addr
 jmp_op -> 'JC' | 'JZ' | 'JMP'
 
 reg -> "R[1-7]*"
 literal -> "#[0-9A-F]+"
-addr -> "[0-9A-F]+"
+addr -> "@[0-9A-F]+"
+NLINE -> "[\n]+"
+LABEL -> "[A-Za-z_][A-Za-z0-9_]*"
+COLON -> ":"

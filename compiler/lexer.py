@@ -3,7 +3,8 @@ import sys
 
 
 token_exprs = [
-    (r'[ \t\n]+',                  None), # Spaces, tabs, new lines
+    (r'[\n]+',                  'NLINE'), # New lines
+    (r'[ \t]+',                    None), # Spaces, tabs between comands
     (r';[^\n]*',                   None), # Comment 
 
     (r'PUSH',                    "PUSH"),
@@ -31,7 +32,7 @@ token_exprs = [
     (r'NOT',                      "NOT"),
 
     (r'#[0-9A-F]+',           "LITERAL"),
-    (r'[0-9A-F]+',            "ADDRESS"),
+    (r'@[0-9A-F]+',               "ADDR"),
     (r':',                      "COLON"),
     (r',',                      "COMMA"),
     (r'[A-Za-z_][A-Za-z0-9_]*', "LABEL"),                                          
@@ -50,18 +51,20 @@ def do_lex(characters):
             match = regex.match(characters, pos)
             if match:
                 lexem = match.group(0)
-                if '\n' in lexem:
-                    n_line += 1
+                token = (lexem.replace('"',''), tag)
                 if tag:
-                    token = (lexem.replace('"',''), tag)
                     tokens.append(token)
-                break
+                    if tag == 'NLINE':
+                        n_line += 1     
+                break   
         if not match:
             print(f"Wrong character '{characters[pos]}' at {n_line+1} line")
             return(tokens)
             sys.exit(0)
         else:
             pos = match.end(0)
+    if tokens[-1][1] != 'NLINE':
+        tokens.append(('\n', 'NLINE'))
     return tokens
 
 
