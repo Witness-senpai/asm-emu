@@ -1,13 +1,13 @@
 ;KOK
 ;MOV @AA R1
 PUSH @BB
-PUSH @AA
+PUSH #AA
 ADD
 POP R1
 LOOP1:
     CMP
-    JZ END
     JMP LOOP1
 END:
     PUSH R2
     PUSH R5
+    JZ END

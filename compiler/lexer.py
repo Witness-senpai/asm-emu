@@ -50,8 +50,11 @@ def do_lex(characters):
             match = regex.match(characters, pos)
             if match:
                 lexem = match.group(0)
-                token = (lexem.replace('"',''), tag)
+                token = [lexem.replace('"', ''), tag]
                 if tag:
+                    # Removing # and @ for literals and addresses
+                    if tag in ['LITERAL', 'ADDR']:
+                        token[0] = token[0][1:]
                     tokens.append(token)
                     if tag == 'NLINE':
                         n_line += 1     
@@ -63,7 +66,7 @@ def do_lex(characters):
         else:
             pos = match.end(0)
     if tokens[-1][1] != 'NLINE':
-        tokens.append(('\n', 'NLINE'))
+        tokens.append(['\n', 'NLINE'])
     return tokens
 
 
