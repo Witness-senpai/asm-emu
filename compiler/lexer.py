@@ -10,7 +10,6 @@ token_exprs = [
     (r'PUSH',                    "PUSH"),
     (r'POP',                      "POP"),
 
-    (r'MOV',                      "MOV"),
     (r'R[1-7]+',                  "REG"), # One of registers R1-R7
 
     (r'CMP',                      "CMP"), 

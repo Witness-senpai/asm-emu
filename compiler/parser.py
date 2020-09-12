@@ -58,7 +58,6 @@ class Parser:
     # common -> mov | pop | push
     def __common(self):
         if not (
-            self.__mov() or
             self.__pop() or
             self.__push()
         ):
@@ -117,26 +116,7 @@ class Parser:
         if not self.__check_token_tag('NLINE'):
             self.exception('new line')
             return False
-        return True
-
-    # mov -> 'MOV' (addr | reg) (addr | reg | literal)   
-    def __mov(self):
-        if not self.__check_token_tag('MOV'):
-            return False
-        if not (
-            self.__check_token_tag('ADDR') or
-            self.__check_token_tag('REG')
-        ):
-            self.exception('ADDRESS OR REGISTER')
-            return False
-        if not (
-            self.__check_token_tag('ADDR') or
-            self.__check_token_tag('REG') or 
-            self.__check_token_tag('LITERAL')
-        ):
-            self.exception('ADDRESS, REGISTER OR LITERAL')
-            return False
-        return True  
+        return True 
 
     # pop -> 'POP' (addr | reg)   
     def __pop(self):

@@ -1,5 +1,5 @@
 ;KOK
-MOV @AA R1
+;MOV @AA R1
 PUSH @BB
 PUSH @AA
 ADD
