@@ -1,6 +1,7 @@
 from lexer import do_lex
 from asm_parser import Parser
 from compiler import Compiler
+from assembler_lang import Assembler
 
 
 with open('test.ass', 'r') as f:
@@ -13,5 +14,10 @@ with open('test.ass', 'r') as f:
     
         compiler = Compiler(valid_cmd_lines)
         compiler.compile()
-        print(compiler.compiled_cmds)
+        program = compiler.compiled_cmds
+        print(program)
+        print([hex(int(line, 2)) for line in program])
         print(compiler.jumps)
+
+        assembler = Assembler(program, compiler.jumps)
+        assembler.execute_code()
