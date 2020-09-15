@@ -17,12 +17,12 @@ class Parser:
     pop -> 'POP' (addr | reg)
     push -> 'PUSH' (addr | literal | reg)
 
-    arif_op -> 'ADD' | 'SUB'
+    arif_op -> 'ADD' | 'SUB' | 'INC' | 'DEC'
     log_op -> 'AND' | 'OR' | 'XOR' | 'NOR' | 'NOT'
     comp_op -> 'CMP'
     shift_op -> 'SHL' | 'SHR'
 
-    jmp_op -> 'JC' | 'JZ' | 'JMP'
+    jmp_op -> 'JC' | 'JZ' | 'JP' | 'JO' | 'JS' | 'JMP'
 
     reg -> "R[1-7]*"
     literal -> "#[0-9A-F]+"
@@ -175,7 +175,9 @@ class Parser:
     def __arif_op(self):
         if (
             self.__check_token_tag('ADD') or
-            self.__check_token_tag('SUB')
+            self.__check_token_tag('SUB') or
+            self.__check_token_tag('INC') or
+            self.__check_token_tag('DEC')
         ):
             return True
         return False
@@ -214,6 +216,9 @@ class Parser:
         if not (
             self.__check_token_tag('JC') or
             self.__check_token_tag('JZ') or
+            self.__check_token_tag('JS') or
+            self.__check_token_tag('JP') or
+            self.__check_token_tag('JO') or
             self.__check_token_tag('JMP')
         ):
             return False

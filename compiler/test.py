@@ -16,7 +16,6 @@ with open('test.ass', 'r') as f:
         compiler.compile()
         program = compiler.compiled_cmds
         print(program)
-        print([hex(int(line, 2)) for line in program])
         print(compiler.jumps)
 
         assembler = Assembler(program, compiler.jumps)

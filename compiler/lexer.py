@@ -10,16 +10,21 @@ token_exprs = [
     (r'PUSH',                    "PUSH"),
     (r'POP',                      "POP"),
 
-    (r'R[1-7]+',                  "REG"), # One of registers R1-R7
+    (r'R[1-7]',                  "REG"), # One of registers R1-R7
 
-    (r'CMP',                      "CMP"), 
+    (r'CMP',                      "CMP"),
 
     (r'JMP',                      "JMP"),
     (r'JZ',                        "JZ"),
     (r'JC',                        "JC"),
+    (r'JS',                        "JS"),
+    (r'JP',                        "JP"),
+    (r'JO',                        "JO"),
 
     (r'ADD',                      "ADD"),
     (r'SUB',                      "SUB"),
+    (r'INC',                      "INC"),
+    (r'DEC',                      "DEC"),
  
     (r'SHL',                      "SHL"), # Shift left
     (r'SHR',                      "SHR"), # Shift right
@@ -31,7 +36,7 @@ token_exprs = [
     (r'NOT',                      "NOT"),
 
     (r'#[0-9A-F]+',           "LITERAL"),
-    (r'@[0-9A-F]+',               "ADDR"),
+    (r'@[0-9A-FR\[1-7\]]+',      "ADDR"),
     (r':',                      "COLON"),
     (r',',                      "COMMA"),
     (r'[A-Za-z_][A-Za-z0-9_]*', "LABEL"),                                          
@@ -39,6 +44,7 @@ token_exprs = [
 
 
 def do_lex(characters):
+    characters.upper()
     tokens = []
     pos = 0
     n_line = 0

@@ -18,17 +18,18 @@ class Compiler:
         self.compiled_cmds = [] # Result of compilation
 
     def compile(self):
-        for cmd_line in self.valid_cmd_lines:
+        for n_line, cmd_line in enumerate(self.valid_cmd_lines):
             literal_code = ''.zfill(LITERAL_LENGTH)
             address_code = ''.zfill(ADDRESS_LENGTH)
             register_code = ''.zfill(REGISTER_LENGTH)
             if cmd_line[0][1] == 'LABEL':
                 self.jumps.update({
-                    cmd_line[0][0]: str(hex(len(self.compiled_cmds)))[2:]
+                    cmd_line[0][0]: n_line
                 })
             else:
                 cmd_code = self.__to_bin(
-                    CMD_CODES[cmd_line[0][1]]
+                    CMD_CODES[cmd_line[0][1]],
+                    base=10
                 ).zfill(CMDCODE_LENGTH)
                 if len(cmd_line) == 1: # For comands w/o addresses and literals
                     pass
@@ -39,14 +40,23 @@ class Compiler:
                     except Exception as ex:
                         print(ex)
                     address_code = self.__to_bin(
-                            str(jump_address)
+                            str(jump_address),
+                            base=10,
                         ).zfill(ADDRESS_LENGTH)
                 elif cmd_line[1][1] == 'LITERAL':
                     literal_code = self.__to_bin(cmd_line[1][0]) \
                         .zfill(LITERAL_LENGTH)
                 elif cmd_line[1][1] == 'ADDR':
-                    address_code = self.__to_bin(cmd_line[1][0]) \
-                        .zfill(ADDRESS_LENGTH)
+                    # If indetect addressing by register
+                    if 'R' in cmd_line[1][0]:
+                        register_code = self.__to_bin(cmd_line[1][0][1]) \
+                            .zfill(REGISTER_LENGTH)
+                        # Address = 1..1 as a signal for assembler, that's a
+                        # indetect addressing by register
+                        address_code = ''.ljust(ADDRESS_LENGTH, '1')
+                    else:
+                        address_code = self.__to_bin(cmd_line[1][0]) \
+                            .zfill(ADDRESS_LENGTH)
                 elif cmd_line[1][1] == 'REG':
                     register_code = self.__to_bin(cmd_line[1][0][1]) \
                         .zfill(REGISTER_LENGTH)

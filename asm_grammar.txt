@@ -1,13 +1,12 @@
 lang -> expr*
 expr -> (NLINE | common | arifetic | logical | jump | label)
 
-common -> (mov | pop | push) NLINE
+common -> (pop | push) NLINE
 arifetic -> arif_op NLINE
 logical -> (log_op | comp_op | shift_op) NLINE
 jump -> jmp_op (addr | LABEL) NLINE
 label -> LABEL COLON NLINE
 
-mov -> 'MOV' (addr | reg) (addr | reg | literal)
 pop -> 'POP' (addr | reg)
 push -> 'PUSH' (addr | literal | reg)
 

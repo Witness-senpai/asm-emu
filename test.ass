@@ -1,13 +1,42 @@
-;KOK
-;MOV @AA R1
-PUSH @BB
-PUSH #AA
-ADD
+;TEST ASSEMBLER PROGRAMM
+PUSH #0A ;Count of elements
+POP @F0
+PUSH #03 ;List of elements
+POP @F1
+PUSH #05
+POP @F2
+PUSH #0A
+POP @F3
+PUSH #10
+POP @F4
+PUSH #0B
+POP @F5
+PUSH #0F
+POP @F6
+PUSH #01
+POP @F7
+PUSH #00
+POP @F8
+PUSH #19
+POP @F9
+PUSH #02
+POP @FA
+
+PUSH #F1 ;Save first address to R1
 POP R1
-LOOP1:
-    CMP
-    JMP LOOP1
-END:
-    PUSH R2
-    PUSH R5
-    JZ END
+PUSH #00 ;Save max number to R2
+POP R2
+PUSH #F0 ;Save count of numbers
+POP R3
+
+FIND_MAX:
+    PUSH R2 ;Push current max number
+    PUSH @R1 ;Push current number from list
+    CMP      ;Compare
+    JS FIND_MAX
+    PUSH @R1 ;Push new max to stack
+    POP @R2  ;Rewrite register with max
+    PUSH @R1 ;Inc current address
+    INC
+    POP @R1
+    JZ FIND_MAX
