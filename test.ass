@@ -33,17 +33,24 @@ PUSH R1  ;Dec current address
 DEC
 POP R1
 
+PUSH R3  ;Dec count of number
+INC
+POP R3
+
 NEXT_MAX:
     PUSH R1  ;Inc current address
     INC
-    POP R1   
+    POP R1
+    PUSH R3  ;Dec count of numbers
+    DEC
+    POP R3
+    JZ END_PROGRAM
     PUSH R2  ;Push current max number
     PUSH @R1 ;Push current number from list
     CMP      ;Compare
     NJS NEXT_MAX ;If a new max -> next
     PUSH @R1 ;Push new max to stack 
     POP R2   ;Rewrite R2 with max
-    PUSH R3  ;Dec count of numbers
-    DEC
-    POP R3
-    NJZ NEXT_MAX
+    JMP NEXT_MAX
+END_PROGRAM:
+    NOPE

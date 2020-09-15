@@ -8,7 +8,7 @@ class Parser:
     lang -> expr*
     expr -> (NLINE | common | arifetic | logical | jump | label)
 
-    common -> (pop | push) NLINE
+    common -> (pop | push | 'NOPE') NLINE
     arifetic -> arif_op NLINE
     logical -> (log_op | comp_op | shift_op) NLINE
     jump -> jmp_op (addr | LABEL) NLINE
@@ -84,11 +84,14 @@ class Parser:
             return False
         return True  
 
-    # common -> mov | pop | push
     def __common(self):
+        """
+        common -> (pop | push | 'NOPE') NLINE
+        """
         if not (
             self.__pop() or
-            self.__push()
+            self.__push() or 
+            self.__check_token_tag('NOPE')
         ):
             return False
         if not self.__check_token_tag('NLINE'):

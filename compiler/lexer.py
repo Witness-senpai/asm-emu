@@ -13,6 +13,7 @@ token_exprs = [
     (r'R[1-7]',                   "REG"), # One of registers R1-R7
 
     (r'CMP',                      "CMP"),
+    (r'NOPE',                    "NOPE"),
 
     (r'JMP',                      "JMP"),
     (r'JZ',                        "JZ"),

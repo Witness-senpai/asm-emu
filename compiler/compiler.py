@@ -18,14 +18,18 @@ class Compiler:
         self.compiled_cmds = [] # Result of compilation
 
     def compile(self):
+        # Detect all jumps and their addresses
+        for n_line, cmd_line in enumerate(self.valid_cmd_lines):
+            if cmd_line[0][1] == 'LABEL':
+                self.jumps.update({
+                    cmd_line[0][0]: n_line
+            })
         for n_line, cmd_line in enumerate(self.valid_cmd_lines):
             literal_code = ''.zfill(LITERAL_LENGTH)
             address_code = ''.zfill(ADDRESS_LENGTH)
             register_code = ''.zfill(REGISTER_LENGTH)
             if cmd_line[0][1] == 'LABEL':
-                self.jumps.update({
-                    cmd_line[0][0]: n_line
-                })
+                continue
             else:
                 cmd_code = self.__to_bin(
                     CMD_CODES[cmd_line[0][1]],

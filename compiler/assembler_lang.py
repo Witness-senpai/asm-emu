@@ -72,13 +72,15 @@ class Assembler():
         self.jumps = jumps
     
     def execute_code(self):
-        while self.__R['PC'] <= len(self.compiled_cmds):
+        while self.__R['PC'] < len(self.compiled_cmds):
             if self.__R['PC'] == 29:
                 print(1)
             print(self.__R)
             print(self.__stack)
-            cmd = self.compiled_cmds[self.__R['PC']]
-
+            try:
+                cmd = self.compiled_cmds[self.__R['PC']]
+            except Exception as ex:
+                print(ex)
             cmd_code = int(cmd[:CMDCODE_LENGTH], 2)
             literal  = int(cmd[CMDCODE_LENGTH:CMDCODE_LENGTH+LITERAL_LENGTH], 2)
             address  = int(cmd[CMDCODE_LENGTH+LITERAL_LENGTH:-REGISTER_LENGTH], 2)
@@ -141,6 +143,8 @@ class Assembler():
                 self.__njs(address=address)
             elif cmd_code == 25:
                 self.__njo(address=address)
+            elif cmd_code == 26:
+                self.__nope()
 
     def __cmd_stack_push(self, el):
         self.__stack[self.__R['SP']] = el
@@ -433,3 +437,6 @@ class Assembler():
         self.__flags['O'] = not self.__flags['O']
         self.__jo(address)
         self.__flags['O'] = not self.__flags['O']
+
+    def __nope(self):
+        self.__R['PC'] += 1
