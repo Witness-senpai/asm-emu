@@ -6,6 +6,7 @@ from constants import (
     CMDCODE_LENGTH,
     LITERAL_LENGTH,
     ADDRESS_LENGTH,
+    REGISTER_LENGTH,
 )
 
 
@@ -24,38 +25,38 @@ class Assembler():
 
 
     Inputting RISC comands format:
-        X1_X2_X3, 32 bits length
+        X1_X2_X3_X4, 35 bits length
         [0-7]   X1 -- code of command (see constants.py)
         [8-23]  X2 -- literal (Filling zeros if not exists)
         [24-31] X3 -- address (Filling zeros if not exists)
+        [32-34] X4 -- number of register
     
     Stack machine:
         
     """
     def __init__(self, compiled_cmds, jumps):
-        self.__REGS_N = 8
-        self.__R = { # Dictionary of system registers.
-            str(i): 0 for i in range(self.__REGS_N)
+        # Dictionary of common registers[from 1 to 2**REGISTER_LENGTH-1]
+        # and also of system registers -- PC and SP
+        self.__R = { 
+            (i+1): 0 for i in range(2**REGISTER_LENGTH-1)
         }
-        self.__regs = { 
-            'A': False,
-            'B': False,
-            'C': False,
-            'D': False,
-            'PC': 0, # Programm counter.
-            'SP': 0, # Stack pointer.
-        } 
+        self.__R.update(
+            { 
+                'PC': 0, # Programm counter.
+                'SP': 0, # Stack pointer.
+            }
+        )
         self.__flags = { # Dictionary of flags.
-            'Z': False,
-            'S': False,
-            'P': False,
-            'C': False,
-            'AC': False,
+            'Z': False, # Zero
+            'S': False, # Sign 
+            'P': False, # Parity
+            'C': False, # Carry
+            'O': False, # Overflow
         } 
         # List of stack, where will be executing all operations.
-        self.__stack = [0, 0, 0, 0, 0] 
+        self.__stack = [0, 0, 0, 0, 0]
         # List, witch using as memory space for commands and operands.
-        self.__mem = np.zeros(2**ADDRESS_LENGTH - 1, dtype=int)
+        self.__mem = np.zeros(2**ADDRESS_LENGTH, dtype=int)
         self.compiled_cmds = compiled_cmds
         self.jumps = jumps
     
@@ -66,21 +67,28 @@ class Assembler():
     def execute_code(self):
         for cmd in self.compiled_cmds: 
             # TODO: hardcode
-            cmd_code = int(cmd, 0) & 0b11111111000000000000000000000000
-            literal = int(cmd, 0) & 0b00000000111111111111111100000000
-            address = int(cmd, 0) & 0b00000000000000000000000011111111
-            
+            cmd_code = int(cmd[:CMDCODE_LENGTH], 2)
+            literal  = int(cmd[CMDCODE_LENGTH:CMDCODE_LENGTH+LITERAL_LENGTH], 2)
+            address  = int(cmd[CMDCODE_LENGTH+LITERAL_LENGTH:-REGISTER_LENGTH], 2)
+            register = int(cmd[-REGISTER_LENGTH:], 2)
+
             if cmd_code == 1:
                 self.__add()
             elif cmd_code == 2:
                 self.__sub()
             elif cmd_code == 3:
-                self.__push(address=address)
+                self.__push(
+                    literal=literal,
+                    address=address,
+                    register=register,
+                )
             elif cmd_code == 4:
-                self.__pop()
+                self.__pop(
+                    address=address,
+                    register=register,
+                )
             elif cmd_code == 5:
                 self.__cmp()
-            """
             elif cmd_code == 6:
                 self.__not()
             elif cmd_code == 7:
@@ -96,58 +104,161 @@ class Assembler():
             elif cmd_code == 12:
                 self.__shr()
             elif cmd_code == 13:
-                self.__jmp()
+                self.__jmp(address=address)
             elif cmd_code == 14:
-                self.__jc()
+                self.__jc(address=address)
             elif cmd_code == 15:
-                self.__jz()"""
+                self.__jz(address=address)
 
     def __cmd_stack_push(self, el):
-        self.__stack[self.__regs['SP']] = el
-        self.__regs['SP'] + 1
+        self.__stack[self.__R['SP']] = el
+        self.__R['SP'] += 1
 
     def __cmd_stack_pop(self):
-        self.__regs['SP'] - 1
-        return self.__stack[self.__regs['SP']]
+        self.__R['SP'] -= 1
+        return self.__stack[self.__R['SP']]
 
-    def __update_flags(self):
-        stack_head = self.__stack[-1]
-        if stack_head == 0:
-            pass    
+    def __update_flags(self, res):
+        if res == 0:
+            self.__flags['Z'] = True
+        else:
+            self.__flags['Z'] = False
+
+        if res < 0:
+            self.__flags['S'] = True
+        else:
+            self.__flags['S'] = False
+        
+        if res % 2 == 0:
+            self.__flags['P'] = True
+        else:
+            self.__flags['P'] = False
+
 
     def __add(self):
-        op1 = self.__stack.pop()
-        op2 = self.__stack.pop()
-        res = int(op1, 0) + int(op2, 0)
-        self.__push(literal=res)
+        op1 = self.__cmd_stack_pop()
+        op2 = self.__cmd_stack_pop()
+        res = int(str(op1), 0) + int(str(op2), 0)
+        self.__update_flags(res)
+        self.__push(
+                    literal=res,
+                    address=0,
+                    register=0,
+                )
     
     def __sub(self):
-        op1 = self.__stack.pop()
-        op2 = self.__stack.pop()
-        res = int(op1, 0) - int(op2, 0)
-        self.__push(literal=res)
+        res = self.__cmp()
+        self.__push(
+            literal=res,
+            address=0,
+            register=0,
+        )
 
-    def __push(self, address=None, literal=None, register=None):
-        if address != None:
-            self.__cmd_stack_push(self.__mem[address])
-        elif literal != None:
+    def __push(self, literal, address, register):
+        if address == register == 0:
             self.__cmd_stack_push(literal)
-        elif register != None:
-            pass
-             # TODO: Regs support
+        elif literal == register == 0:
+            self.__cmd_stack_push(self.__mem[address])
+        elif address == literal == 0:
+            self.__cmd_stack_push(self.__R[register])
         else:
             print('Empty stack!')
+        self.__R['PC'] += 1
         
-    def __pop(self, address=None, register=None):
-        if len(self.__stack) == 0:
-            print('Empty stack!')
-        elif address != None:
+    def __pop(self, address, register):
+        if register == 0:
             self.__mem[address] = self.__cmd_stack_pop()
-        elif register != None:
-            pass
-            # TODO: Regs support
+        elif address == 0:
+            self.__R[register] = self.__cmd_stack_pop()
+        self.__R['PC'] += 1
     
     def __cmp(self):
-        pass
+        op1 = self.__cmd_stack_pop()
+        op2 = self.__cmd_stack_pop()
+        res = op1 - op2
+        self.__update_flags(res)
+        return res
+    
+    def __not(self):
+        op = self.__cmd_stack_pop()
+        res = ~op
+        self.__update_flags(res)
+        self.__push(
+            literal=res,
+            address=0,
+            register=0,
+        )
+    
+    def __or(self):
+        op1 = self.__cmd_stack_pop()
+        op2 = self.__cmd_stack_pop()
+        res = op1 | op2
+        self.__update_flags(res)
+        self.__push(
+            literal=res,
+            address=0,
+            register=0,
+        )
 
+    def __and(self):
+        op1 = self.__cmd_stack_pop()
+        op2 = self.__cmd_stack_pop()
+        res = op1 & op2
+        self.__update_flags(res)
+        self.__push(
+            literal=res,
+            address=0,
+            register=0,
+        )
+
+    def __xor(self):
+        op1 = self.__cmd_stack_pop()
+        op2 = self.__cmd_stack_pop()
+        res = op1 ^ op2
+        self.__update_flags(res)
+        self.__push(
+            literal=res,
+            address=0,
+            register=0,
+        )
+
+    def __nor(self):
+        op1 = self.__cmd_stack_pop()
+        op2 = self.__cmd_stack_pop()
+        res = ~(op1 | op2)
+        self.__update_flags(res)
+        self.__push(
+            literal=res,
+            address=0,
+            register=0,
+        )
+
+    def __shl(self):
+        op = self.__cmd_stack_pop()
+        res = op << 1
+        self.__update_flags(res)
+        self.__push(
+            literal=res,
+            address=0,
+            register=0,
+        )
+
+    def __shr(self):
+        op = self.__cmd_stack_pop()
+        res = op >> 1
+        self.__update_flags(res)
+        self.__push(
+            literal=res,
+            address=0,
+            register=0,
+        )
+
+    def __jmp(self, address):
+        self.__R['PC'] = address
+
+    def __jc(self, address):
+        self.__R['PC'] = address
+
+    def __jz(self, address):
+        self.__R['PC'] = address
 
