@@ -23,10 +23,11 @@ class Parser:
     shift_op -> 'SHL' | 'SHR'
 
     jmp_op -> 'JC' | 'JZ' | 'JP' | 'JO' | 'JS' | 'JMP'
+        | 'NJC' | 'NJZ' | 'NJP' | 'NJO' | 'NJS'
 
     reg -> "R[1-7]*"
     literal -> "#[0-9A-F]+"
-    addr -> "@[0-9A-F]+"
+    addr -> "@[0-9A-F]+|@R[1-7]"
     NLINE -> "[\n]+"
     LABEL -> "[A-Za-z_][A-Za-z0-9_]*"
     COLON -> ":"
@@ -211,14 +212,22 @@ class Parser:
             return True
         return False
 
-    # jmp_op -> 'JC' | 'JZ' | 'JMP'
     def __jmp_op(self):
+        """
+        jmp_op -> 'JC' | 'JZ' | 'JP' | 'JO' | 'JS' | 'JMP'
+            | 'NJC' | 'NJZ' | 'NJP' | 'NJO' | 'NJS'
+        """
         if not (
             self.__check_token_tag('JC') or
             self.__check_token_tag('JZ') or
             self.__check_token_tag('JS') or
             self.__check_token_tag('JP') or
             self.__check_token_tag('JO') or
+            self.__check_token_tag('NJC') or
+            self.__check_token_tag('NJZ') or
+            self.__check_token_tag('NJS') or
+            self.__check_token_tag('NJP') or
+            self.__check_token_tag('NJO') or
             self.__check_token_tag('JMP')
         ):
             return False

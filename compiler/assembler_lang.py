@@ -75,6 +75,8 @@ class Assembler():
         while self.__R['PC'] <= len(self.compiled_cmds):
             if self.__R['PC'] == 29:
                 print(1)
+            print(self.__R)
+            print(self.__stack)
             cmd = self.compiled_cmds[self.__R['PC']]
 
             cmd_code = int(cmd[:CMDCODE_LENGTH], 2)
@@ -129,6 +131,16 @@ class Assembler():
                 self.__js(address=address)
             elif cmd_code == 20:
                 self.__jo(address=address)
+            elif cmd_code == 21:
+                self.__njc(address=address)
+            elif cmd_code == 22:
+                self.__njz(address=address)
+            elif cmd_code == 23:
+                self.__njp(address=address)
+            elif cmd_code == 24:
+                self.__njs(address=address)
+            elif cmd_code == 25:
+                self.__njo(address=address)
 
     def __cmd_stack_push(self, el):
         self.__stack[self.__R['SP']] = el
@@ -191,13 +203,15 @@ class Assembler():
     def __inc(self):
         op = self.__cmd_stack_pop()
         op += 1
-        self.__update_flags(abs(op))
+        self.__cmd_stack_push(op)
+        self.__update_flags(op)
         self.__R['PC'] += 1
 
     def __dec(self):
         op = self.__cmd_stack_pop()
         op -= 1
-        self.__update_flags(abs(op))
+        self.__cmd_stack_push(abs(op))
+        self.__update_flags(op)
         self.__R['PC'] += 1
         
     def __push(self, literal, address, register):
@@ -355,6 +369,11 @@ class Assembler():
         else:
             self.__R['PC'] += 1
 
+    def __njc(self, address):
+        self.__flags['C'] = not self.__flags['C']
+        self.__jc(address)
+        self.__flags['C'] = not self.__flags['C']
+
     def __jz(self, address):
         """
         Go to the address if zero flag
@@ -364,6 +383,11 @@ class Assembler():
             self.__R['PC'] = address
         else:
             self.__R['PC'] += 1
+
+    def __njz(self, address):
+        self.__flags['Z'] = not self.__flags['Z']
+        self.__jz(address)
+        self.__flags['Z'] = not self.__flags['Z']
 
     def __jp(self, address):
         """
@@ -375,6 +399,11 @@ class Assembler():
         else:
             self.__R['PC'] += 1
 
+    def __njp(self, address):
+        self.__flags['P'] = not self.__flags['P']
+        self.__jp(address)
+        self.__flags['P'] = not self.__flags['P']
+
     def __js(self, address):
         """
         Go to the address if sign flag (number < 0)
@@ -384,6 +413,11 @@ class Assembler():
             self.__R['PC'] = address
         else:
             self.__R['PC'] += 1
+    
+    def __njs(self, address):
+        self.__flags['S'] = not self.__flags['S']
+        self.__js(address)
+        self.__flags['S'] = not self.__flags['S']
 
     def __jo(self, address):
         """
@@ -394,3 +428,8 @@ class Assembler():
             self.__R['PC'] = address
         else:
             self.__R['PC'] += 1
+    
+    def __njo(self, address):
+        self.__flags['O'] = not self.__flags['O']
+        self.__jo(address)
+        self.__flags['O'] = not self.__flags['O']

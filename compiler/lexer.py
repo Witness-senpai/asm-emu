@@ -10,7 +10,7 @@ token_exprs = [
     (r'PUSH',                    "PUSH"),
     (r'POP',                      "POP"),
 
-    (r'R[1-7]',                  "REG"), # One of registers R1-R7
+    (r'R[1-7]',                   "REG"), # One of registers R1-R7
 
     (r'CMP',                      "CMP"),
 
@@ -20,6 +20,11 @@ token_exprs = [
     (r'JS',                        "JS"),
     (r'JP',                        "JP"),
     (r'JO',                        "JO"),
+    (r'NJZ',                      "NJZ"),
+    (r'NJC',                      "NJC"),
+    (r'NJS',                      "NJS"),
+    (r'NJP',                      "NJP"),
+    (r'NJO',                      "NJO"),
 
     (r'ADD',                      "ADD"),
     (r'SUB',                      "SUB"),
@@ -36,7 +41,7 @@ token_exprs = [
     (r'NOT',                      "NOT"),
 
     (r'#[0-9A-F]+',           "LITERAL"),
-    (r'@[0-9A-FR\[1-7\]]+',      "ADDR"),
+    (r'@[0-9A-F]+|@R[1-7]',      "ADDR"),
     (r':',                      "COLON"),
     (r',',                      "COMMA"),
     (r'[A-Za-z_][A-Za-z0-9_]*', "LABEL"),                                          

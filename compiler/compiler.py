@@ -33,7 +33,7 @@ class Compiler:
                 ).zfill(CMDCODE_LENGTH)
                 if len(cmd_line) == 1: # For comands w/o addresses and literals
                     pass
-                elif cmd_line[0][1] in ['JMP', 'JZ', 'JC']:
+                elif 'J' in cmd_line[0][1]: # For all jumps
                     try:
                         jump_address = self.jumps[cmd_line[1][0]] \
                             if cmd_line[1][1] == 'LABEL' else cmd_line[1][0]

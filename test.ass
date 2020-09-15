@@ -20,23 +20,30 @@ POP @F8
 PUSH #19
 POP @F9
 PUSH #02
-POP @FA
+POP @FA 
 
 PUSH #F1 ;Save first address to R1
 POP R1
 PUSH #00 ;Save max number to R2
 POP R2
-PUSH #F0 ;Save count of numbers
-POP R3
+PUSH @F0 ;Save count of numbers
+POP R3 ;28
 
-FIND_MAX:
-    PUSH R2 ;Push current max number
+PUSH R1  ;Dec current address
+DEC
+POP R1
+
+NEXT_MAX:
+    PUSH R1  ;Inc current address
+    INC
+    POP R1   
+    PUSH R2  ;Push current max number
     PUSH @R1 ;Push current number from list
     CMP      ;Compare
-    JS FIND_MAX
-    PUSH @R1 ;Push new max to stack
-    POP @R2  ;Rewrite register with max
-    PUSH @R1 ;Inc current address
-    INC
-    POP @R1
-    JZ FIND_MAX
+    NJS NEXT_MAX ;If a new max -> next
+    PUSH @R1 ;Push new max to stack 
+    POP R2   ;Rewrite R2 with max
+    PUSH R3  ;Dec count of numbers
+    DEC
+    POP R3
+    NJZ NEXT_MAX
