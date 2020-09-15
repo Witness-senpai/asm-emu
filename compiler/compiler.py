@@ -4,6 +4,7 @@ from constants import (
     CMDCODE_LENGTH,
     LITERAL_LENGTH,
     ADDRESS_LENGTH,
+    REGISTER_LENGTH,
 )
 
 class Compiler:
@@ -20,6 +21,7 @@ class Compiler:
         for cmd_line in self.valid_cmd_lines:
             literal_code = ''.zfill(LITERAL_LENGTH)
             address_code = ''.zfill(ADDRESS_LENGTH)
+            register_code = ''.zfill(REGISTER_LENGTH)
             if cmd_line[0][1] == 'LABEL':
                 self.jumps.update({
                     cmd_line[0][0]: str(hex(len(self.compiled_cmds)))[2:]
@@ -40,16 +42,20 @@ class Compiler:
                             str(jump_address)
                         ).zfill(ADDRESS_LENGTH)
                 elif cmd_line[1][1] == 'LITERAL':
-                    # [2:] - for removing '0b' in binary number
                     literal_code = self.__to_bin(cmd_line[1][0]) \
                         .zfill(LITERAL_LENGTH)
                 elif cmd_line[1][1] == 'ADDR':
                     address_code = self.__to_bin(cmd_line[1][0]) \
                         .zfill(ADDRESS_LENGTH)
                 elif cmd_line[1][1] == 'REG':
-                    pass
+                    register_code = self.__to_bin(cmd_line[1][0][1]) \
+                        .zfill(REGISTER_LENGTH)
+
                 self.compiled_cmds.append(
-                    bin(int(cmd_code + literal_code + address_code, 2))
+                    cmd_code 
+                    + literal_code  
+                    + address_code
+                    + register_code
                 )
     
     def __to_bin(self, num, base=None):
@@ -58,5 +64,5 @@ class Compiler:
         """
         if base is None:
             base = INPUT_BASE
-        # [2:] -- for removing 0b from binary
+        # [2:] -- for removing '0b' from binary
         return str(bin(int(num, base)))[2:]
