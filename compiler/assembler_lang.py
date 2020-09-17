@@ -34,15 +34,14 @@ class Assembler():
     
     Stack machine:
         Using stack for execution all opertions.
-        3|   | 
-        2|   |
-        1| - |
-        0|_A_| <<-- Stack Pointer
+        3| 0 | 
+        2| 0 |
+        1| 0 |
+        0| A | <<-- Stack Pointer
     """
-    def __init__(self, compiled_cmds, jumps):
-        # Bynary program and jumps addresses from compiler
+    def __init__(self, compiled_cmds):
+        # Bynary program from compiler
         self.compiled_cmds = compiled_cmds
-        self.jumps = jumps
         # List of stack, where will be executing all operations.
         self.__stack = [0, 0, 0, 0, 0]
         # List, witch using as memory space for commands and operands.
@@ -65,9 +64,8 @@ class Assembler():
         }
 
     
-    def input_program(self, compiled_cmds, jumps):
+    def input_program(self, compiled_cmds):
         self.compiled_cmds = compiled_cmds
-        self.jumps = jumps
     
     def execute_code(self):
         """
@@ -150,6 +148,7 @@ class Assembler():
         self.__R['SP'] += 1
 
     def __cmd_stack_pop(self):
+        self.__stack[self.__R['SP']] = 0
         self.__R['SP'] -= 1
         return self.__stack[self.__R['SP']]
 
@@ -171,7 +170,6 @@ class Assembler():
             self.__flags['P'] = True
         else:
             self.__flags['P'] = False
-
 
     def __add(self):
         """
@@ -204,6 +202,9 @@ class Assembler():
         )
 
     def __inc(self):
+        """
+        Increment of last stack element
+        """
         op = self.__cmd_stack_pop()
         op += 1
         self.__cmd_stack_push(op)
@@ -211,6 +212,9 @@ class Assembler():
         self.__R['PC'] += 1
 
     def __dec(self):
+        """
+        Decrement of last stack element
+        """
         op = self.__cmd_stack_pop()
         op -= 1
         self.__cmd_stack_push(abs(op))

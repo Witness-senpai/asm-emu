@@ -18,5 +18,5 @@ with open('test.ass', 'r') as f:
         print(program)
         print(compiler.jumps)
 
-        assembler = Assembler(program, compiler.jumps)
+        assembler = Assembler(program)
         assembler.execute_code()
