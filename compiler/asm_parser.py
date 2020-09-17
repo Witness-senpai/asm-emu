@@ -25,7 +25,7 @@ class Parser:
     jmp_op -> 'JC' | 'JZ' | 'JP' | 'JO' | 'JS' | 'JMP'
         | 'NJC' | 'NJZ' | 'NJP' | 'NJO' | 'NJS'
 
-    reg -> "R[1-7]*"
+    reg -> "R[1-7]"
     literal -> "#[0-9A-F]+"
     addr -> "@[0-9A-F]+|@R[1-7]"
     NLINE -> "[\n]+"
@@ -45,8 +45,10 @@ class Parser:
             f"but '{expected}' are expected!")
         exit(0)
     
-    # Check tag of current token
     def __check_token_tag(self, tag):
+        """
+        Check tag of current token
+        """
         if self.tokens[self.__pos][1] == tag:
             if tag == 'NLINE':
                 self.__n_line += 1
@@ -63,16 +65,20 @@ class Parser:
     def is_valid_code(self):
         return self.__lang()
 
-    # lang -> expr*
     def __lang(self):
+        """
+        lang -> expr*
+        """
         while(self.__pos < len(self.tokens)):
             if (not self.__expr()):
                 self.exception("any expression")
                 return False
         return True    
 
-    # expr -> (common | arifetic | logical | jump) NLINE
     def __expr(self):
+        """
+        expr -> (NLINE | common | arifetic | logical | jump | label)
+        """
         if not (
             self.__check_token_tag('NLINE') or
             self.__common() or
@@ -99,8 +105,10 @@ class Parser:
             return False
         return True  
 
-    # arifetic -> arif_op
     def __arifetic(self):
+        """
+        arifetic -> arif_op NLINE
+        """
         if not (
             self.__arif_op()
         ):
@@ -110,8 +118,10 @@ class Parser:
             return False
         return True  
 
-    # logical -> log_op | comp_op | shift_op
     def __logical(self):
+        """
+        logical -> (log_op | comp_op | shift_op) NLINE
+        """
         if not (
             self.__log_op() or
             self.__comp_op() or 
@@ -123,8 +133,10 @@ class Parser:
             return False
         return True  
 
-    # jump -> jmp_op addr   
     def __jump(self):
+        """
+        jump -> jmp_op (addr | LABEL) NLINE
+        """
         if not self.__jmp_op():
             return False
         if not (
@@ -138,8 +150,10 @@ class Parser:
             return False
         return True
     
-    # label -> LABEL COMMA
     def __label(self):
+        """
+        label -> LABEL COLON NLINE
+        """
         if not self.__check_token_tag('LABEL'):
             return False
         if not self.__check_token_tag('COLON'):
@@ -149,9 +163,11 @@ class Parser:
             self.exception('new line')
             return False
         return True 
-
-    # pop -> 'POP' (addr | reg)   
+  
     def __pop(self):
+        """
+        pop -> 'POP' (addr | reg)
+        """
         if not self.__check_token_tag('POP'):
             return False
         if not (
@@ -162,8 +178,10 @@ class Parser:
             return False
         return True       
 
-    # push -> 'PUSH' (literal | reg)
     def __push(self):
+        """
+        push -> 'PUSH' ('ADDR' | 'LITERAL' | 'REG')
+        """
         if not self.__check_token_tag('PUSH'):
             return False
         if not (
@@ -175,8 +193,10 @@ class Parser:
             return False
         return True
 
-    # arif_op -> 'ADD' | 'SUB'
     def __arif_op(self):
+        """
+        arif_op -> 'ADD' | 'SUB' | 'INC' | 'DEC'
+        """
         if (
             self.__check_token_tag('ADD') or
             self.__check_token_tag('SUB') or
@@ -186,8 +206,10 @@ class Parser:
             return True
         return False
 
-    # log_op -> 'AND' | 'OR' | 'XOR' | 'NOR' | 'NOT'
     def __log_op(self):
+        """
+        log_op -> 'AND' | 'OR' | 'XOR' | 'NOR' | 'NOT'
+        """
         if (
             self.__check_token_tag('AND') or
             self.__check_token_tag('OR') or
@@ -198,16 +220,20 @@ class Parser:
             return True
         return False       
 
-    # comp_op -> 'CMP'
     def __comp_op(self):
+        """
+        comp_op -> 'CMP'
+        """
         if (
             self.__check_token_tag('CMP') 
         ):
             return True
         return False
 
-    # shift_op -> 'SHL' | 'SHR'     
     def __shift_op(self):
+        """
+        shift_op -> 'SHL' | 'SHR'
+        """
         if (
             self.__check_token_tag('SHL') or
             self.__check_token_tag('SHR')

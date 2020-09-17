@@ -18,7 +18,9 @@ class Compiler:
         self.compiled_cmds = [] # Result of compilation
 
     def compile(self):
-        # Detect all jumps and their addresses
+        """
+        Detect all jumps and their addresses
+        """
         for n_line, cmd_line in enumerate(self.valid_cmd_lines):
             if cmd_line[0][1] == 'LABEL':
                 self.jumps.update({

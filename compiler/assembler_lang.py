@@ -1,4 +1,4 @@
-import numpy as np
+from array import array
 
 from constants import (
     CMD_CODES,
@@ -46,18 +46,16 @@ class Assembler():
         # List of stack, where will be executing all operations.
         self.__stack = [0, 0, 0, 0, 0]
         # List, witch using as memory space for commands and operands.
-        self.__mem = np.zeros(2**ADDRESS_LENGTH, dtype=int)
+        self.__mem = array('i', [0 for _ in range(2**ADDRESS_LENGTH-1)])
         # Dictionary of common registers[from 1 to 2**REGISTER_LENGTH-1]
         # and also of system registers -- PC and SP
         self.__R = { 
             (i+1): 0 for i in range(2**REGISTER_LENGTH-1)
         }
-        self.__R.update(
-            { 
-                'PC': 0, # Programm counter.
-                'SP': 0, # Stack pointer
-            }
-        )
+        self.__R.update({ 
+            'PC': 0, # Programm counter.
+            'SP': 0, # Stack pointer
+        })
         self.__flags = {# Dictionary of flags.
             'Z': False, # Zero
             'S': False, # Sign 
@@ -72,9 +70,10 @@ class Assembler():
         self.jumps = jumps
     
     def execute_code(self):
+        """
+        Main function for execution binary code
+        """
         while self.__R['PC'] < len(self.compiled_cmds):
-            if self.__R['PC'] == 29:
-                print(1)
             print(self.__R)
             print(self.__stack)
             try:
@@ -122,27 +121,27 @@ class Assembler():
             elif cmd_code == 14:
                 self.__shr()
             elif cmd_code == 15:
-                self.__jmp(address=address)
+                self.__jmp(new_pc=address)
             elif cmd_code == 16:
-                self.__jc(address=address)
+                self.__jc(new_pc=address)
             elif cmd_code == 17:
-                self.__jz(address=address)
+                self.__jz(new_pc=address)
             elif cmd_code == 18:
-                self.__jp(address=address)
+                self.__jp(new_pc=address)
             elif cmd_code == 19:
-                self.__js(address=address)
+                self.__js(new_pc=address)
             elif cmd_code == 20:
-                self.__jo(address=address)
+                self.__jo(new_pc=address)
             elif cmd_code == 21:
-                self.__njc(address=address)
+                self.__njc(new_pc=address)
             elif cmd_code == 22:
-                self.__njz(address=address)
+                self.__njz(new_pc=address)
             elif cmd_code == 23:
-                self.__njp(address=address)
+                self.__njp(new_pc=address)
             elif cmd_code == 24:
-                self.__njs(address=address)
+                self.__njs(new_pc=address)
             elif cmd_code == 25:
-                self.__njo(address=address)
+                self.__njo(new_pc=address)
             elif cmd_code == 26:
                 self.__nope()
 
@@ -356,87 +355,84 @@ class Assembler():
             register=0,
         )
 
-    def __jmp(self, address):
+    def __jmp(self, new_pc):
         """
-        Go to the address obtained from the label
+        Go to the new PC obtained from the label
         """
-        # In this case, address -- line of asm program
-        self.__R['PC'] = address
+        self.__R['PC'] = new_pc
 
-    def __jc(self, address):
+    def __jc(self, new_pc):
         """
-        Go to the address if carry flag
+        Go to the new PC if carry flag
         """
-        # In this case, address -- line of asm program
         if self.__flags['C']:
-            self.__R['PC'] = address
+            self.__R['PC'] = new_pc
         else:
             self.__R['PC'] += 1
 
-    def __njc(self, address):
+    def __njc(self, new_pc):
         self.__flags['C'] = not self.__flags['C']
-        self.__jc(address)
+        self.__jc(new_pc)
         self.__flags['C'] = not self.__flags['C']
 
-    def __jz(self, address):
+    def __jz(self, new_pc):
         """
-        Go to the address if zero flag
+        Go to the new PC if zero flag
         """
-        # In this case, address -- line of asm program
         if self.__flags['Z']:
-            self.__R['PC'] = address
+            self.__R['PC'] = new_pc
         else:
             self.__R['PC'] += 1
 
-    def __njz(self, address):
+    def __njz(self, new_pc):
         self.__flags['Z'] = not self.__flags['Z']
-        self.__jz(address)
+        self.__jz(new_pc)
         self.__flags['Z'] = not self.__flags['Z']
 
-    def __jp(self, address):
+    def __jp(self, new_pc):
         """
-        Go to the address if parity flag (even number)
+        Go to the new PC if parity flag (even number)
         """
-        # In this case, address -- line of asm program
         if self.__flags['P']:
-            self.__R['PC'] = address
+            self.__R['PC'] = new_pc
         else:
             self.__R['PC'] += 1
 
-    def __njp(self, address):
+    def __njp(self, new_pc):
         self.__flags['P'] = not self.__flags['P']
-        self.__jp(address)
+        self.__jp(new_pc)
         self.__flags['P'] = not self.__flags['P']
 
-    def __js(self, address):
+    def __js(self, new_pc):
         """
-        Go to the address if sign flag (number < 0)
+        Go to the new PC if sign flag (number < 0)
         """
-        # In this case, address -- line of asm program
         if self.__flags['S']:
-            self.__R['PC'] = address
+            self.__R['PC'] = new_pc
         else:
             self.__R['PC'] += 1
     
-    def __njs(self, address):
+    def __njs(self, new_pc):
         self.__flags['S'] = not self.__flags['S']
-        self.__js(address)
+        self.__js(new_pc)
         self.__flags['S'] = not self.__flags['S']
 
-    def __jo(self, address):
+    def __jo(self, new_pc):
         """
-        Go to the address if overflow flag
+        Go to the new PC if overflow flag
         """
-        # In this case, address -- line of asm program
         if self.__flags['O']:
-            self.__R['PC'] = address
+            self.__R['PC'] = new_pc
         else:
             self.__R['PC'] += 1
     
-    def __njo(self, address):
+    def __njo(self, new_pc):
         self.__flags['O'] = not self.__flags['O']
-        self.__jo(address)
+        self.__jo(new_pc)
         self.__flags['O'] = not self.__flags['O']
 
     def __nope(self):
+        """
+        Skip clock and just increment PC
+        """
         self.__R['PC'] += 1

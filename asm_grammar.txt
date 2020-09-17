@@ -1,7 +1,7 @@
 lang -> expr*
 expr -> (NLINE | common | arifetic | logical | jump | label)
 
-common -> (pop | push) NLINE
+common -> (pop | push | 'NOPE') NLINE
 arifetic -> arif_op NLINE
 logical -> (log_op | comp_op | shift_op) NLINE
 jump -> jmp_op (addr | LABEL) NLINE
@@ -10,16 +10,17 @@ label -> LABEL COLON NLINE
 pop -> 'POP' (addr | reg)
 push -> 'PUSH' (addr | literal | reg)
 
-arif_op -> 'ADD' | 'SUB'
+arif_op -> 'ADD' | 'SUB' | 'INC' | 'DEC'
 log_op -> 'AND' | 'OR' | 'XOR' | 'NOR' | 'NOT'
 comp_op -> 'CMP'
 shift_op -> 'SHL' | 'SHR'
 
-jmp_op -> 'JC' | 'JZ' | 'JMP'
+jmp_op -> 'JC' | 'JZ' | 'JP' | 'JO' | 'JS' | 'JMP'
+    | 'NJC' | 'NJZ' | 'NJP' | 'NJO' | 'NJS'
 
 reg -> "R[1-7]*"
 literal -> "#[0-9A-F]+"
-addr -> "@[0-9A-F]+"
+addr -> "@[0-9A-F]+|@R[1-7]"
 NLINE -> "[\n]+"
 LABEL -> "[A-Za-z_][A-Za-z0-9_]*"
 COLON -> ":"
