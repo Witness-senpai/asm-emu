@@ -1,7 +1,7 @@
-from lexer import do_lex
-from asm_parser import Parser
-from compiler import Compiler
-from assembler_lang import Assembler
+from .lexer import do_lex
+from .asm_parser import Parser
+from .compiler import Compiler
+from .assembler_lang import Assembler
 
 
 with open('test.ass', 'r') as f:

@@ -1,1 +1,4 @@
 compiler/__pycache__/
+pyasm.egg-info
+.vscode
+pyasm/__pycache__/

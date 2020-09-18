@@ -1,4 +1,4 @@
-from constants import (
+from .constants import (
     CMD_CODES,
     INPUT_BASE,
     CMDCODE_LENGTH,

@@ -80,9 +80,3 @@ def do_lex(characters):
     if tokens[-1][1] != 'NLINE':
         tokens.append(['\n', 'NLINE'])
     return tokens
-
-
-if __name__ == '__main__':
-    with open('test.ass', 'r') as f:
-        program = f.read()
-    print(do_lex(program))      

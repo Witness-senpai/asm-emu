@@ -1,6 +1,9 @@
 from array import array
 
-from constants import (
+from .lexer import do_lex
+from .asm_parser import Parser
+from .compiler import Compiler
+from .constants import (
     CMD_CODES,
     INPUT_BASE,
     CMDCODE_LENGTH,
@@ -40,7 +43,7 @@ class Assembler():
         1| 0 |
         0| A | <<-- Stack Pointer
     """
-    def __init__(self, compiled_cmds):
+    def __init__(self, compiled_cmds=None):
         # Bynary program from compiler
         self.compiled_cmds = compiled_cmds
         # List of stack, where will be executing all operations.
@@ -64,10 +67,21 @@ class Assembler():
             'O': False, # Overflow
         }
 
+    def reset_all(self):
+        self.__init__(self.compiled_cmds)
     
-    def input_program(self, compiled_cmds):
-        self.compiled_cmds = compiled_cmds
-    
+    def input_text_program(self, program_text):
+        """
+        Input programm from simple text
+        """
+        tokens = do_lex(program_text)
+        parser = Parser(tokens)
+        if (parser.is_valid_code()):
+            valid_cmd_lines = parser.valid_cmd_lines
+            compiler = Compiler(valid_cmd_lines)
+            compiler.compile()
+            self.compiled_cmds = compiler.compiled_cmds
+
     def execute_code(self):
         """
         Main function for execution binary code
