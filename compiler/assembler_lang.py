@@ -7,6 +7,7 @@ from constants import (
     LITERAL_LENGTH,
     ADDRESS_LENGTH,
     REGISTER_LENGTH,
+    FIRST_DATA_ADDRESS,
 )
 
 
@@ -29,8 +30,8 @@ class Assembler():
         X1_X2_X3_X4, 35 bits length
         [0-7]   X1 -- code of command (see constants.py)
         [8-23]  X2 -- literal (Filling zeros if not using)
-        [24-31] X3 -- address (Filling zeros if not using)
-        [32-34] X4 -- number of register (Filling zeros if not using)
+        [24-39] X3 -- address (Filling zeros if not using)
+        [40-42] X4 -- number of register (Filling zeros if not using)
     
     Stack machine:
         Using stack for execution all opertions.
