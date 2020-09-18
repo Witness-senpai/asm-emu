@@ -1,4 +1,5 @@
 from array import array
+import numpy as np
 
 from .lexer import do_lex
 from .asm_parser import Parser
@@ -23,7 +24,7 @@ class Assembler():
         * Using stack machine for execution of code
 
     Fon Neiman architecture:
-        All memory space there are in self.__mem, but logical
+        All memory space there are in self.memory, but logical
         separating on two parts: for commands and data.
         Memory ratio for commands and data by default -- 1:3
         Addresses for commands: [0, FIRST_DATA_ADDRESS - 1]
@@ -47,25 +48,37 @@ class Assembler():
         # Bynary program from compiler
         self.compiled_cmds = compiled_cmds
         # List of stack, where will be executing all operations.
-        self.__stack = [0, 0, 0, 0, 0]
+        self.stack = [0, 0, 0, 0, 0]
         # List, witch using as memory space for commands and operands.
-        self.__mem = array('i', [0 for _ in range(2**ADDRESS_LENGTH-1)])
+        self.memory = array('i', [0 for _ in range(2**ADDRESS_LENGTH-1)])
+        if not compiled_cmds is None:
+            self.init_memory()
         # Dictionary of common registers[from 1 to 2**REGISTER_LENGTH-1]
         # and also of system registers -- PC and SP
-        self.__R = { 
+        self.R = { 
             (i+1): 0 for i in range(2**REGISTER_LENGTH-1)
         }
-        self.__R.update({ 
+        self.R.update({ 
             'PC': 0, # Programm counter.
             'SP': 0, # Stack pointer
         })
-        self.__flags = {# Dictionary of flags.
+        self.flags = {# Dictionary of flags.
             'Z': False, # Zero
             'S': False, # Sign 
             'P': False, # Parity
             'C': False, # Carry
             'O': False, # Overflow
         }
+    
+    def init_memory(self):
+        """
+        Init memory
+        """
+        print(self.compiled_cmds)
+        # TODO: fix simple list 
+        self.memory = [cmd for cmd in self.compiled_cmds] + \
+            ['0' for _ in range(
+                2**ADDRESS_LENGTH-len(self.compiled_cmds))]
 
     def reset_all(self):
         self.__init__(self.compiled_cmds)
@@ -81,16 +94,17 @@ class Assembler():
             compiler = Compiler(valid_cmd_lines)
             compiler.compile()
             self.compiled_cmds = compiler.compiled_cmds
+            self.init_memory()
 
     def execute_code(self):
         """
         Main function for execution binary code
         """
-        while self.__R['PC'] < len(self.compiled_cmds):
-            print(self.__R)
-            print(self.__stack)
+        while self.R['PC'] < len(self.compiled_cmds):
+            print(self.R)
+            print(self.stack)
             try:
-                cmd = self.compiled_cmds[self.__R['PC']]
+                cmd = self.compiled_cmds[self.R['PC']]
             except Exception as ex:
                 print(ex)
             cmd_code = int(cmd[:CMDCODE_LENGTH], 2)
@@ -159,32 +173,32 @@ class Assembler():
                 self.__nope()
 
     def __cmd_stack_push(self, el):
-        self.__stack[self.__R['SP']] = el
-        self.__R['SP'] += 1
+        self.stack[self.R['SP']] = el
+        self.R['SP'] += 1
 
     def __cmd_stack_pop(self):
-        self.__stack[self.__R['SP']] = 0
-        self.__R['SP'] -= 1
-        return self.__stack[self.__R['SP']]
+        self.stack[self.R['SP']] = 0
+        self.R['SP'] -= 1
+        return self.stack[self.R['SP']]
 
     def __update_flags(self, res):
         """
         Updating flags depends of res
         """
         if res == 0:
-            self.__flags['Z'] = True
+            self.flags['Z'] = True
         else:
-            self.__flags['Z'] = False
+            self.flags['Z'] = False
 
         if res < 0:
-            self.__flags['S'] = True
+            self.flags['S'] = True
         else:
-            self.__flags['S'] = False
+            self.flags['S'] = False
         
         if res % 2 == 0:
-            self.__flags['P'] = True
+            self.flags['P'] = True
         else:
-            self.__flags['P'] = False
+            self.flags['P'] = False
 
     def __add(self):
         """
@@ -224,7 +238,7 @@ class Assembler():
         op += 1
         self.__cmd_stack_push(op)
         self.__update_flags(op)
-        self.__R['PC'] += 1
+        self.R['PC'] += 1
 
     def __dec(self):
         """
@@ -234,24 +248,24 @@ class Assembler():
         op -= 1
         self.__cmd_stack_push(abs(op))
         self.__update_flags(op)
-        self.__R['PC'] += 1
+        self.R['PC'] += 1
         
     def __push(self, literal, address, register):
         """
         Pushing element to stack as literal or from register or from memory
         """
         if (register != 0 and address == 2**ADDRESS_LENGTH - 1):
-            address = self.__R[register] # Indirect addressing by register
-            self.__cmd_stack_push(self.__mem[address])
+            address = self.R[register] # Indirect addressing by register
+            self.__cmd_stack_push(self.memory[address])
         elif address == register == 0:
             self.__cmd_stack_push(literal)
         elif literal == register == 0:
-            self.__cmd_stack_push(self.__mem[address])
+            self.__cmd_stack_push(self.memory[address])
         elif address == literal == 0:
-            self.__cmd_stack_push(self.__R[register])
+            self.__cmd_stack_push(self.R[register])
         else:
             print('Empty stack!')
-        self.__R['PC'] += 1
+        self.R['PC'] += 1
         
     def __pop(self, address, register):
         """
@@ -260,14 +274,14 @@ class Assembler():
         if (register != 0 and address == 2**ADDRESS_LENGTH - 1) \
                 or register == 0:
             if register != 0: # If indirect addressing by register
-                address = self.__R[register]
+                address = self.R[register]
             # If direct addressing by address
-            self.__mem[address] = self.__cmd_stack_pop()
+            self.memory[address] = self.__cmd_stack_pop()
         elif address == 0:
-            self.__R[register] = self.__cmd_stack_pop()
+            self.R[register] = self.__cmd_stack_pop()
         elif register == 0:
-            self.__R[register] = self.__cmd_stack_pop()
-        self.__R['PC'] += 1
+            self.R[register] = self.__cmd_stack_pop()
+        self.R['PC'] += 1
     
     def __cmp(self):
         """
@@ -277,7 +291,7 @@ class Assembler():
         op2 = self.__cmd_stack_pop()
         res = op2 - op1
         self.__update_flags(res)
-        self.__R['PC'] += 1
+        self.R['PC'] += 1
     
     def __not(self):
         """
@@ -378,80 +392,80 @@ class Assembler():
         """
         Go to the new PC obtained from the label
         """
-        self.__R['PC'] = new_pc
+        self.R['PC'] = new_pc
 
     def __jc(self, new_pc):
         """
         Go to the new PC if carry flag
         """
-        if self.__flags['C']:
-            self.__R['PC'] = new_pc
+        if self.flags['C']:
+            self.R['PC'] = new_pc
         else:
-            self.__R['PC'] += 1
+            self.R['PC'] += 1
 
     def __njc(self, new_pc):
-        self.__flags['C'] = not self.__flags['C']
+        self.flags['C'] = not self.flags['C']
         self.__jc(new_pc)
-        self.__flags['C'] = not self.__flags['C']
+        self.flags['C'] = not self.flags['C']
 
     def __jz(self, new_pc):
         """
         Go to the new PC if zero flag
         """
-        if self.__flags['Z']:
-            self.__R['PC'] = new_pc
+        if self.flags['Z']:
+            self.R['PC'] = new_pc
         else:
-            self.__R['PC'] += 1
+            self.R['PC'] += 1
 
     def __njz(self, new_pc):
-        self.__flags['Z'] = not self.__flags['Z']
+        self.flags['Z'] = not self.flags['Z']
         self.__jz(new_pc)
-        self.__flags['Z'] = not self.__flags['Z']
+        self.flags['Z'] = not self.flags['Z']
 
     def __jp(self, new_pc):
         """
         Go to the new PC if parity flag (even number)
         """
-        if self.__flags['P']:
-            self.__R['PC'] = new_pc
+        if self.flags['P']:
+            self.R['PC'] = new_pc
         else:
-            self.__R['PC'] += 1
+            self.R['PC'] += 1
 
     def __njp(self, new_pc):
-        self.__flags['P'] = not self.__flags['P']
+        self.flags['P'] = not self.flags['P']
         self.__jp(new_pc)
-        self.__flags['P'] = not self.__flags['P']
+        self.flags['P'] = not self.flags['P']
 
     def __js(self, new_pc):
         """
         Go to the new PC if sign flag (number < 0)
         """
-        if self.__flags['S']:
-            self.__R['PC'] = new_pc
+        if self.flags['S']:
+            self.R['PC'] = new_pc
         else:
-            self.__R['PC'] += 1
+            self.R['PC'] += 1
     
     def __njs(self, new_pc):
-        self.__flags['S'] = not self.__flags['S']
+        self.flags['S'] = not self.flags['S']
         self.__js(new_pc)
-        self.__flags['S'] = not self.__flags['S']
+        self.flags['S'] = not self.flags['S']
 
     def __jo(self, new_pc):
         """
         Go to the new PC if overflow flag
         """
-        if self.__flags['O']:
-            self.__R['PC'] = new_pc
+        if self.flags['O']:
+            self.R['PC'] = new_pc
         else:
-            self.__R['PC'] += 1
+            self.R['PC'] += 1
     
     def __njo(self, new_pc):
-        self.__flags['O'] = not self.__flags['O']
+        self.flags['O'] = not self.flags['O']
         self.__jo(new_pc)
-        self.__flags['O'] = not self.__flags['O']
+        self.flags['O'] = not self.flags['O']
 
     def __nope(self):
         """
         Skip clock and just increment PC
         """
-        self.__R['PC'] += 1
+        self.R['PC'] += 1
