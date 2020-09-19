@@ -178,7 +178,6 @@ class Assembler():
         elif cmd_code == 26:
             self.__nope()
 
-
     def execute_all_code(self):
         """
         Function for execution all binary code
@@ -188,6 +187,7 @@ class Assembler():
             
     def __cmd_stack_push(self, el):
         self.stack[self.R['SP']] = el
+        self.__update_flags(el)
         self.R['SP'] += 1
 
     def __cmd_stack_pop(self):

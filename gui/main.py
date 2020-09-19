@@ -25,6 +25,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.btn_reset.clicked.connect(self.btn_reset_click)
         self.btn_load.clicked.connect(self.btn_load_click)
 
+        # Used colors
+        self.qt_white_color = QtGui.QColor(255, 255, 255)
+        self.qt_green_color = QtGui.QColor(127, 201, 127)
+
+        # Using the previous item to correctly visualize
+        # step by step execution program
+        self.previous_mem_item = None
+
         self.list_memory.setHeaderLabels(['addr','data'])
 
         # Init Assembler class
@@ -49,9 +57,9 @@ class MainWindow(QtWidgets.QMainWindow):
         if reset:
             flags = [False for _ in self.assembler.flags]
         self.checkBox_Z.setChecked(flags[0])
-        self.checkBox_C.setChecked(flags[1])
-        self.checkBox_S.setChecked(flags[2])
-        self.checkBox_P.setChecked(flags[3])
+        self.checkBox_S.setChecked(flags[1])
+        self.checkBox_P.setChecked(flags[2])
+        self.checkBox_C.setChecked(flags[3])
         self.checkBox_O.setChecked(flags[4])
     
     def __update_registers(self, reset=False):
@@ -85,28 +93,39 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         pass
 
+    def __colorize_mem_item(self):
+        """
+        Visualize current memory item with color
+        """
+        # Back to white for previous item
+        if not self.previous_mem_item is None:
+            self.previous_mem_item.setBackground(0, (self.qt_white_color))
+            self.previous_mem_item.setBackground(1, (self.qt_white_color))
+    
+        # Colorize current item
+        item = self.list_memory.topLevelItem(self.assembler.R['PC'])
+        self.previous_mem_item = self.list_memory.topLevelItem(self.assembler.R['PC'])
+        item.setBackground(0, (self.qt_green_color))
+        item.setBackground(1, (self.qt_green_color))
+
+        if self.assembler.R['PC'] > 0:
+            item = self.list_memory.topLevelItem(self.assembler.R['PC']-1)
+            item.setBackground(0, (self.qt_white_color))
+            item.setBackground(1, (self.qt_white_color))
+
+        
     def btn_step_click(self):
         """
         Button for executing program step by step
         """
         print("step")
-        # Back to white for previous item
-        if self.assembler.R['PC'] != 0:
-            item = self.list_memory.topLevelItem(self.assembler.R['PC']-1)
-            item.setBackground(0, (QtGui.QColor(255, 255, 255)))
-            item.setBackground(1, (QtGui.QColor(255, 255, 255)))
-        # Colorize current item
-        item = self.list_memory.topLevelItem(self.assembler.R['PC'])
-        item.setBackground(0, (QtGui.QColor(127, 201, 127)))
-        item.setBackground(1, (QtGui.QColor(127, 201, 127)))
-        print(item)
-        # If latest item for cmd part
-        if self.assembler.R['PC'] == len(self.assembler.compiled_cmds) - 1:
+        self.__colorize_mem_item()
+        if self.assembler.R['PC'] >= len(self.assembler.compiled_cmds):
             self.btn_step.setEnabled(False)
             self.btn_run.setEnabled(False)
-
-        self.assembler.execute_code_by_step()
-        self.__update_gui_conponents()
+        else:
+            self.assembler.execute_code_by_step()
+            self.__update_gui_conponents()
     
     def btn_run_click(self):
         """
@@ -114,7 +133,11 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         print("run")
         self.assembler.execute_all_code()
-        
+        self.btn_step.setEnabled(False)
+        self.btn_run.setEnabled(False)
+        self.__update_gui_conponents()
+        self.__colorize_mem_item()
+
     def btn_reset_click(self):
         """
         Reset assembler and GUI to the start state
@@ -124,6 +147,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.btn_step.setEnabled(True)
         self.btn_run.setEnabled(True)
         self.btn_load.setEnabled(True)
+        self.textEdit_input.setReadOnly(False)
         self.__update_gui_conponents(reset=True)
     
     def btn_load_click(self):
