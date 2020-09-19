@@ -29,10 +29,65 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Init Assembler class
         self.assembler = Assembler()
+    
+    def __update_gui_conponents(self, reset=False):
+        """
+        Updating all components in GUI according to assembler state
+        """
+        self.__update_flags(reset=reset)
+        self.__update_registers(reset=reset)
+        self.__update_stack(reset=reset)
+        self.__update_memory(reset=reset)
+
+    def __update_flags(self, reset=False):
+        """
+        Updating flags in GUI according yo assembler state
+        """
+        flags = [self.assembler.flags[key] 
+            for key in self.assembler.flags.keys()
+        ]
+        if reset:
+            flags = [False for _ in self.assembler.flags]
+        self.checkBox_Z.setChecked(flags[0])
+        self.checkBox_C.setChecked(flags[1])
+        self.checkBox_S.setChecked(flags[2])
+        self.checkBox_P.setChecked(flags[3])
+        self.checkBox_O.setChecked(flags[4])
+    
+    def __update_registers(self, reset=False):
+        """
+        Updating registers in GUI according yo assembler state
+        """
+        regs = [self.assembler.R[key]
+            for key in self.assembler.R.keys()
+        ]
+        if reset:
+            regs = [0 for _ in self.assembler.R]
+        self.lcd_R1.display(regs[0])
+        self.lcd_R2.display(regs[1])
+        self.lcd_R3.display(regs[2])
+        self.lcd_R4.display(regs[3])
+        self.lcd_R5.display(regs[4])
+        self.lcd_R6.display(regs[5])
+        self.lcd_R7.display(regs[6])
+        self.lcd_PC.display(regs[7])
+        self.lcd_SP.display(regs[8])
+    
+    def __update_stack(self, reset=False):
+        """
+        Updating stack in GUI according yo assembler state
+        """
+        pass
+
+    def __update_memory(self, reset=False):
+        """
+        Updating memory in GUI according yo assembler state
+        """
+        pass
 
     def btn_step_click(self):
         """
-        Button for xecuting program step by step
+        Button for executing program step by step
         """
         print("step")
         # Back to white for previous item
@@ -45,21 +100,31 @@ class MainWindow(QtWidgets.QMainWindow):
         item.setBackground(0, (QtGui.QColor(127, 201, 127)))
         item.setBackground(1, (QtGui.QColor(127, 201, 127)))
         print(item)
-        self.assembler.R['PC'] += 1
+        # If latest item for cmd part
+        if self.assembler.R['PC'] == len(self.assembler.compiled_cmds) - 1:
+            self.btn_step.setEnabled(False)
+            self.btn_run.setEnabled(False)
+
+        self.assembler.execute_code_by_step()
+        self.__update_gui_conponents()
     
     def btn_run_click(self):
         """
         Button for executing all program
         """
         print("run")
-        self.assembler.execute_code()
+        self.assembler.execute_all_code()
         
     def btn_reset_click(self):
         """
-        Reset all flags, registers, memory
+        Reset assembler and GUI to the start state
         """
         print("reset")
         self.assembler.reset_all()
+        self.btn_step.setEnabled(True)
+        self.btn_run.setEnabled(True)
+        self.btn_load.setEnabled(True)
+        self.__update_gui_conponents(reset=True)
     
     def btn_load_click(self):
         """
@@ -93,9 +158,7 @@ class MainWindow(QtWidgets.QMainWindow):
             cmd_item.setText(1, hex(int(cmd, 2)).upper())
             cmd_items.append(cmd_item)
         self.list_memory.addTopLevelItems(cmd_items)
-    
-    def update_memory(self):
-        pass
+
 
 if  __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
