@@ -50,9 +50,9 @@ class Assembler():
         # Assembler program
         self.valid_cmd_lines = valid_cmd_lines
         # List of stack, where will be executing all operations.
-        self.stack = [0, 0, 0, 0, 0]
+        self.stack = [0x0, 0x0, 0x0, 0x0, 0x0]
         # List, witch using as memory space for commands and operands.
-        self.memory = array('i', [0 for _ in range(2**ADDRESS_LENGTH-1)])
+        #self.memory = array('i', [0 for _ in range(2**ADDRESS_LENGTH-1)])
         if not compiled_cmds is None:
             self.init_memory()
         # Dictionary of common registers[from 1 to 2**REGISTER_LENGTH-1]
@@ -76,14 +76,16 @@ class Assembler():
         """
         Init memory
         """
-        print(self.compiled_cmds)
         # TODO: fix simple list 
         self.memory = [cmd for cmd in self.compiled_cmds] + \
             ['0' for _ in range(
                 2**ADDRESS_LENGTH-len(self.compiled_cmds))]
 
     def reset_all(self):
-        self.__init__(self.compiled_cmds)
+        self.__init__(
+            self.compiled_cmds,
+            self.valid_cmd_lines,
+        )
     
     def input_text_program(self, program_text):
         """
@@ -201,6 +203,8 @@ class Assembler():
         """
         Updating flags depends of res
         """
+        if isinstance(res, str):
+            res = int(res, 2)
         if res == 0:
             self.flags['Z'] = True
         else:
@@ -272,11 +276,11 @@ class Assembler():
         """
         if (register != 0 and address == 2**ADDRESS_LENGTH - 1):
             address = self.R[register] # Indirect addressing by register
-            self.__cmd_stack_push(self.memory[address])
+            self.__cmd_stack_push(int(self.memory[address], 2))
         elif address == register == 0:
             self.__cmd_stack_push(literal)
         elif literal == register == 0:
-            self.__cmd_stack_push(self.memory[address])
+            self.__cmd_stack_push(int(self.memory[address], 2))
         elif address == literal == 0:
             self.__cmd_stack_push(self.R[register])
         else:
@@ -292,7 +296,7 @@ class Assembler():
             if register != 0: # If indirect addressing by register
                 address = self.R[register]
             # If direct addressing by address
-            self.memory[address] = self.__cmd_stack_pop()
+            self.memory[address] = bin(self.__cmd_stack_pop())[2:]
         elif address == 0:
             self.R[register] = self.__cmd_stack_pop()
         elif register == 0:

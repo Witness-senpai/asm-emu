@@ -108,37 +108,33 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         Updating memory in GUI according yo assembler state
         """
-        pass
+        print(self.assembler.memory)
+        self.list_memory.clear()
+        memory_items = []
+        for i, cmd in enumerate(self.assembler.memory):
+            cmd_item = QtWidgets.QTreeWidgetItem()
+            cmd_item.setText(0, hex(i).upper())
+            cmd_item.setText(1, hex(int(cmd, 2)).upper())
+            cmd_item.setText(2, 
+                            (self.assembler.valid_cmd_lines[i] \
+                                if i < len(self.assembler.valid_cmd_lines) else '-')
+                            .upper())
+            memory_items.append(cmd_item)
+        self.list_memory.addTopLevelItems(memory_items)
 
-    def __colorize_mem_item(self):
-        """
-        Visualize current memory item with color
-        """
-        # Back to white for previous item
-        if not self.previous_mem_item is None:
-            self.previous_mem_item.setBackground(0, (self.qt_white_color))
-            self.previous_mem_item.setBackground(1, (self.qt_white_color))
-            self.previous_mem_item.setBackground(2, (self.qt_white_color))
-    
         # Colorize current item
-        item = self.list_memory.topLevelItem(self.assembler.R['PC'])
-        self.previous_mem_item = self.list_memory.topLevelItem(self.assembler.R['PC'])
-        item.setBackground(0, (self.qt_green_color))
-        item.setBackground(1, (self.qt_green_color))
-        item.setBackground(2, (self.qt_white_color))
-
-        if self.assembler.R['PC'] > 0:
-            item = self.list_memory.topLevelItem(self.assembler.R['PC']-1)
-            item.setBackground(0, (self.qt_white_color))
-            item.setBackground(1, (self.qt_white_color))
-            item.setBackground(2, (self.qt_white_color))
+        current_memory_item = self.list_memory.topLevelItem(
+            self.assembler.R['PC']
+        )
+        current_memory_item.setBackground(0, (self.qt_green_color))
+        current_memory_item.setBackground(1, (self.qt_green_color))
+        current_memory_item.setBackground(2, (self.qt_green_color))
 
     def btn_step_click(self):
         """
         Button for executing program step by step
         """
         print("step")
-        self.__colorize_mem_item()
         if self.assembler.R['PC'] >= len(self.assembler.compiled_cmds):
             self.btn_step.setEnabled(False)
             self.btn_run.setEnabled(False)
@@ -155,7 +151,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.btn_step.setEnabled(False)
         self.btn_run.setEnabled(False)
         self.__update_gui_conponents()
-        self.__colorize_mem_item()
 
     def btn_reset_click(self):
         """
@@ -168,7 +163,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.btn_load.setEnabled(True)
         self.textEdit_input.setReadOnly(False)
         self.__update_gui_conponents(reset=True)
-        self.__load_program_to_mem()
     
     def btn_load_click(self):
         """
@@ -183,7 +177,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if load_result == True:
                 self.textEdit_input.setReadOnly(True)
                 self.btn_load.setEnabled(False)
-                self.__load_program_to_mem()
+                self.__update_memory()
                 self.__update_stack()
             else:
                 print(load_result)
@@ -193,23 +187,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 msg.setInformativeText(load_result)
                 msg.setWindowTitle("Error")
                 msg.exec_()
-    
-    def __load_program_to_mem(self):
-        print(self.assembler.compiled_cmds)
-        print(self.assembler.valid_cmd_lines)
-        cmd_items = []
-        self.list_memory.clear()
-        self.previous_mem_item = None
-        for i, cmd in enumerate(self.assembler.memory):
-            cmd_item = QtWidgets.QTreeWidgetItem()
-            cmd_item.setText(0, hex(i).upper())
-            cmd_item.setText(1, hex(int(cmd, 2)).upper())
-            cmd_item.setText(2, 
-                            (self.assembler.valid_cmd_lines[i] \
-                                if i < len(self.assembler.valid_cmd_lines) else '-')
-                            .upper())
-            cmd_items.append(cmd_item)
-        self.list_memory.addTopLevelItems(cmd_items)
 
 
 if  __name__ == '__main__':

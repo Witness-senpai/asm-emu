@@ -92,7 +92,6 @@ class Compiler:
                 label = self.valid_cmd_lines.pop(-1).replace(' ', '')
                 is_previos_label = True
 
-    
     def __to_bin(self, num, base=None):
         """
         Converting address or literal to binary number in str format

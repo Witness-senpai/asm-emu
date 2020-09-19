@@ -13,5 +13,9 @@ with open('test.ass', 'r') as f:
         compiler = Compiler( parser.valid_cmds )
         compiler.compile()
 
-    assembler = Assembler(program)
+    #print(compiler.valid_cmd_lines)
+    print(compiler.compiled_cmds)
+    assembler = Assembler()
+
+    assembler.input_text_program(program)
     assembler.execute_all_code()

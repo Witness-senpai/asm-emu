@@ -1244,6 +1244,12 @@ QPushButton:pressed {
        <height>461</height>
       </rect>
      </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="font">
       <font>
        <family>Consolas</family>
@@ -1301,8 +1307,17 @@ QPushButton:pressed {
      <property name="columnCount">
       <number>3</number>
      </property>
+     <attribute name="headerCascadingSectionResizes">
+      <bool>false</bool>
+     </attribute>
+     <attribute name="headerMinimumSectionSize">
+      <number>30</number>
+     </attribute>
      <attribute name="headerDefaultSectionSize">
-      <number>60</number>
+      <number>80</number>
+     </attribute>
+     <attribute name="headerHighlightSections">
+      <bool>false</bool>
      </attribute>
      <attribute name="headerShowSortIndicator" stdset="0">
       <bool>false</bool>
