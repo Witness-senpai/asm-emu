@@ -33,8 +33,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # step by step execution program
         self.previous_mem_item = None
 
-        self.list_memory.setHeaderLabels(['addr','data'])
-        self.list_stack.setHeaderLabels(['SP','data'])
+        self.list_memory.setHeaderLabels(['addr', 'data', 'cmd'])
+        self.list_stack.setHeaderLabels(['SP', 'data'])
 
         # Init Assembler class
         self.assembler = Assembler()
@@ -118,17 +118,20 @@ class MainWindow(QtWidgets.QMainWindow):
         if not self.previous_mem_item is None:
             self.previous_mem_item.setBackground(0, (self.qt_white_color))
             self.previous_mem_item.setBackground(1, (self.qt_white_color))
+            self.previous_mem_item.setBackground(2, (self.qt_white_color))
     
         # Colorize current item
         item = self.list_memory.topLevelItem(self.assembler.R['PC'])
         self.previous_mem_item = self.list_memory.topLevelItem(self.assembler.R['PC'])
         item.setBackground(0, (self.qt_green_color))
         item.setBackground(1, (self.qt_green_color))
+        item.setBackground(2, (self.qt_white_color))
 
         if self.assembler.R['PC'] > 0:
             item = self.list_memory.topLevelItem(self.assembler.R['PC']-1)
             item.setBackground(0, (self.qt_white_color))
             item.setBackground(1, (self.qt_white_color))
+            item.setBackground(2, (self.qt_white_color))
 
     def btn_step_click(self):
         """
@@ -186,13 +189,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 print(load_result)
                 msg = QtWidgets.QMessageBox()
                 msg.setIcon(QtWidgets.QMessageBox.Warning)
-                msg.setText("Load program error")
+                msg.setText("Program load error")
                 msg.setInformativeText(load_result)
                 msg.setWindowTitle("Error")
                 msg.exec_()
     
     def __load_program_to_mem(self):
         print(self.assembler.compiled_cmds)
+        print(self.assembler.valid_cmd_lines)
         cmd_items = []
         self.list_memory.clear()
         self.previous_mem_item = None
@@ -200,6 +204,10 @@ class MainWindow(QtWidgets.QMainWindow):
             cmd_item = QtWidgets.QTreeWidgetItem()
             cmd_item.setText(0, hex(i).upper())
             cmd_item.setText(1, hex(int(cmd, 2)).upper())
+            cmd_item.setText(2, 
+                            (self.assembler.valid_cmd_lines[i] \
+                                if i < len(self.assembler.valid_cmd_lines) else '-')
+                            .upper())
             cmd_items.append(cmd_item)
         self.list_memory.addTopLevelItems(cmd_items)
 

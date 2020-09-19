@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>742</width>
+    <width>804</width>
     <height>542</height>
    </rect>
   </property>
@@ -17,7 +17,7 @@
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>420</x>
+      <x>490</x>
       <y>10</y>
       <width>151</width>
       <height>161</height>
@@ -32,7 +32,7 @@
        <x>10</x>
        <y>19</y>
        <width>133</width>
-       <height>131</height>
+       <height>141</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
@@ -177,7 +177,7 @@
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>580</x>
+      <x>650</x>
       <y>10</y>
       <width>151</width>
       <height>491</height>
@@ -988,7 +988,7 @@ QPushButton:pressed {
    <widget class="QGroupBox" name="groupBox_4">
     <property name="geometry">
      <rect>
-      <x>420</x>
+      <x>490</x>
       <y>170</y>
       <width>151</width>
       <height>171</height>
@@ -1099,7 +1099,7 @@ QPushButton:pressed {
    <widget class="QGroupBox" name="groupBox_5">
     <property name="geometry">
      <rect>
-      <x>420</x>
+      <x>490</x>
       <y>340</y>
       <width>151</width>
       <height>161</height>
@@ -1225,7 +1225,7 @@ QPushButton:pressed {
      <rect>
       <x>190</x>
       <y>10</y>
-      <width>221</width>
+      <width>291</width>
       <height>491</height>
      </rect>
     </property>
@@ -1240,7 +1240,7 @@ QPushButton:pressed {
       <rect>
        <x>10</x>
        <y>16</y>
-       <width>201</width>
+       <width>271</width>
        <height>461</height>
       </rect>
      </property>
@@ -1299,7 +1299,7 @@ QPushButton:pressed {
       <bool>false</bool>
      </property>
      <property name="columnCount">
-      <number>2</number>
+      <number>3</number>
      </property>
      <attribute name="headerDefaultSectionSize">
       <number>60</number>
@@ -1315,6 +1315,11 @@ QPushButton:pressed {
      <column>
       <property name="text">
        <string notr="true">2</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string notr="true">3</string>
       </property>
      </column>
     </widget>
@@ -1338,7 +1343,7 @@ QPushButton:pressed {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>742</width>
+     <width>804</width>
      <height>21</height>
     </rect>
    </property>

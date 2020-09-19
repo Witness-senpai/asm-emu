@@ -12,21 +12,26 @@ class Compiler:
     A Compiler class, that's translates valid command
     to machine code and setts jump addresses.
     """
-    def __init__(self, valid_cmd_lines):
-        self.valid_cmd_lines = valid_cmd_lines
+    def __init__(self, valid_cmds):
+        # List of valid comands from parser
+        self.valid_cmds = valid_cmds
+        # List of valid comands by lines for GUI
+        self.valid_cmd_lines = []
         self.jumps = {} # Dict of jumsp: label->address
         self.compiled_cmds = [] # Result of compilation
 
     def compile(self):
         """
-        Detect all jumps and their addresses
+        Compile all program to bynary code
         """
-        for n_line, cmd_line in enumerate(self.valid_cmd_lines):
+        # Detect all jumps
+        for n_line, cmd_line in enumerate(self.valid_cmds):
             if cmd_line[0][1] == 'LABEL':
                 self.jumps.update({
                     cmd_line[0][0]: n_line
             })
-        for n_line, cmd_line in enumerate(self.valid_cmd_lines):
+        # To bynary code
+        for n_line, cmd_line in enumerate(self.valid_cmds):
             literal_code = ''.zfill(LITERAL_LENGTH)
             address_code = ''.zfill(ADDRESS_LENGTH)
             register_code = ''.zfill(REGISTER_LENGTH)
@@ -73,6 +78,20 @@ class Compiler:
                     + address_code
                     + register_code
                 )
+
+        # Create valid cmd lines for GUI
+        label = ''
+        is_previos_label = False
+        for line in self.valid_cmds:
+            self.valid_cmd_lines.append(''.join([f'{cmd[0]} ' for cmd in line]))
+            # Concatinete LABEL with next command
+            if is_previos_label:
+                self.valid_cmd_lines[-1] = label + ' ' + self.valid_cmd_lines[-1]
+                is_previos_label = False
+            if line[0][1] == 'LABEL':
+                label = self.valid_cmd_lines.pop(-1).replace(' ', '')
+                is_previos_label = True
+
     
     def __to_bin(self, num, base=None):
         """

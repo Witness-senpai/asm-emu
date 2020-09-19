@@ -44,9 +44,11 @@ class Assembler():
         1| 0 |
         0| A | <<-- Stack Pointer
     """
-    def __init__(self, compiled_cmds=None):
+    def __init__(self, compiled_cmds=None, valid_cmd_lines=None):
         # Bynary program from compiler
         self.compiled_cmds = compiled_cmds
+        # Assembler program
+        self.valid_cmd_lines = valid_cmd_lines
         # List of stack, where will be executing all operations.
         self.stack = [0, 0, 0, 0, 0]
         # List, witch using as memory space for commands and operands.
@@ -93,10 +95,10 @@ class Assembler():
         parser = Parser(tokens)
         parse_result = parser.is_valid_code()
         if parse_result[0]:
-            valid_cmd_lines = parser.valid_cmd_lines
-            compiler = Compiler(valid_cmd_lines)
+            compiler = Compiler( parser.valid_cmds )
             compiler.compile()
-
+            
+            self.valid_cmd_lines = compiler.valid_cmd_lines
             self.compiled_cmds = compiler.compiled_cmds
             self.init_memory()
             return True

@@ -36,7 +36,7 @@ class Parser:
         self.tokens = tokens # List of tokens after lexer
         self.__pos = 0 # Current position in tokens
         self.__temp = [] # Temporary code lines for validation
-        self.valid_cmd_lines = [] # List of valid cmd lines
+        self.valid_cmds = [] # List of valid cmds
         self.__n_line = 1 # Number of code line
         self.error_msg = ''
 
@@ -54,7 +54,7 @@ class Parser:
             if tag == 'NLINE':
                 self.__n_line += 1
                 if self.__temp:
-                    self.valid_cmd_lines.append(self.__temp)
+                    self.valid_cmds.append(self.__temp)
                 self.__temp = []
             else:
                 self.__temp.append(self.tokens[self.__pos])
