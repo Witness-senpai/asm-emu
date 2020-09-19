@@ -38,12 +38,13 @@ class Parser:
         self.__temp = [] # Temporary code lines for validation
         self.valid_cmd_lines = [] # List of valid cmd lines
         self.__n_line = 1 # Number of code line
+        self.error_msg = ''
 
     def exception(self, expected):
-        print(f"\nParse error at line {self.__n_line}: " + \
+        self.error_msg = f"\nParse error at line {self.__n_line}: " + \
             f"detected '{self.tokens[self.__pos][0]}', " + \
-            f"but '{expected}' are expected!")
-        exit(0)
+            f"but '{expected}' are expected!"
+        print(self.error_msg)
     
     def __check_token_tag(self, tag):
         """
@@ -63,7 +64,7 @@ class Parser:
         return False
 
     def is_valid_code(self):
-        return self.__lang()
+        return self.__lang(), self.error_msg
 
     def __lang(self):
         """

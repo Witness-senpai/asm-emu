@@ -68,11 +68,21 @@ class MainWindow(QtWidgets.QMainWindow):
         text_program = self.textEdit_input.toPlainText()
         print(text_program)
         if text_program != '':
-            self.assembler.input_text_program(text_program.upper())
-        self.textEdit_input.setReadOnly(True)
-        self.btn_load.setEnabled(False)
-
-        self.load_program_to_mem()
+            load_result = self.assembler.input_text_program(
+                text_program.upper()
+            )
+            if load_result == True:
+                self.textEdit_input.setReadOnly(True)
+                self.btn_load.setEnabled(False)
+                self.load_program_to_mem()
+            else:
+                print(load_result)
+                msg = QtWidgets.QMessageBox()
+                msg.setIcon(QtWidgets.QMessageBox.Warning)
+                msg.setText("Load program error")
+                msg.setInformativeText(load_result)
+                msg.setWindowTitle("Error")
+                msg.exec_()
     
     def load_program_to_mem(self):
         print(self.assembler.compiled_cmds)

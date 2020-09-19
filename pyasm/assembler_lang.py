@@ -88,13 +88,21 @@ class Assembler():
         Input programm from simple text
         """
         tokens = do_lex(program_text)
+        if tokens[0] == False:
+            return tokens[1]
         parser = Parser(tokens)
-        if (parser.is_valid_code()):
+        parse_result = parser.is_valid_code()
+        if parse_result[0]:
             valid_cmd_lines = parser.valid_cmd_lines
             compiler = Compiler(valid_cmd_lines)
             compiler.compile()
+            
             self.compiled_cmds = compiler.compiled_cmds
             self.init_memory()
+            return True
+        else:
+            return parse_result[1]
+            
 
     def execute_code(self):
         """

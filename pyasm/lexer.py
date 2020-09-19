@@ -72,9 +72,7 @@ def do_lex(characters):
                         n_line += 1     
                 break   
         if not match:
-            print(f"Wrong character '{characters[pos]}' at {n_line+1} line")
-            return(tokens)
-            sys.exit(0)
+            return False, f"Wrong character '{characters[pos]}' at {n_line+1} line"
         else:
             pos = match.end(0)
     if tokens[-1][1] != 'NLINE':
