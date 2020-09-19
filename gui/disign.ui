@@ -920,7 +920,7 @@ QLCDNumber:hover {
       <x>0</x>
       <y>10</y>
       <width>181</width>
-      <height>311</height>
+      <height>351</height>
      </rect>
     </property>
     <property name="title">
@@ -943,6 +943,44 @@ QLCDNumber:hover {
      </property>
      <property name="plainText">
       <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_load">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>310</y>
+       <width>161</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Consolas</family>
+       <pointsize>12</pointsize>
+       <weight>9</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color: white;
+	font: 75 12pt &quot;Consolas&quot;;
+	height: 30px;
+	border: none;
+}
+
+QPushButton:hover {
+	background-color: silver;
+}
+
+QPushButton:pressed {
+	background-color: rgb(85, 255, 127)
+}</string>
+     </property>
+     <property name="text">
+      <string>LOAD</string>
      </property>
     </widget>
    </widget>
@@ -1102,11 +1140,14 @@ QPushButton:pressed {
     <property name="title">
      <string>Memory</string>
     </property>
-    <widget class="QListView" name="listView_memory">
+    <widget class="QTreeWidget" name="list_memory">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>20</y>
+       <y>16</y>
        <width>201</width>
        <height>461</height>
       </rect>
@@ -1114,18 +1155,85 @@ QPushButton:pressed {
      <property name="font">
       <font>
        <family>Consolas</family>
-       <pointsize>14</pointsize>
+       <pointsize>12</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+       <kerning>false</kerning>
       </font>
      </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAsNeeded</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAsNeeded</enum>
+     </property>
+     <property name="sizeAdjustPolicy">
+      <enum>QAbstractScrollArea::AdjustIgnored</enum>
+     </property>
+     <property name="tabKeyNavigation">
+      <bool>false</bool>
+     </property>
+     <property name="showDropIndicator" stdset="0">
+      <bool>false</bool>
+     </property>
+     <property name="dragDropMode">
+      <enum>QAbstractItemView::NoDragDrop</enum>
+     </property>
+     <property name="alternatingRowColors">
+      <bool>false</bool>
+     </property>
+     <property name="autoExpandDelay">
+      <number>1</number>
+     </property>
+     <property name="indentation">
+      <number>13</number>
+     </property>
+     <property name="rootIsDecorated">
+      <bool>true</bool>
+     </property>
+     <property name="uniformRowHeights">
+      <bool>false</bool>
+     </property>
+     <property name="itemsExpandable">
+      <bool>false</bool>
+     </property>
+     <property name="animated">
+      <bool>false</bool>
+     </property>
+     <property name="wordWrap">
+      <bool>false</bool>
+     </property>
+     <property name="expandsOnDoubleClick">
+      <bool>false</bool>
+     </property>
+     <property name="columnCount">
+      <number>2</number>
+     </property>
+     <attribute name="headerDefaultSectionSize">
+      <number>60</number>
+     </attribute>
+     <attribute name="headerShowSortIndicator" stdset="0">
+      <bool>false</bool>
+     </attribute>
+     <column>
+      <property name="text">
+       <string notr="true">1</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string notr="true">2</string>
+      </property>
+     </column>
     </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_7">
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>320</y>
+      <y>360</y>
       <width>181</width>
-      <height>181</height>
+      <height>141</height>
      </rect>
     </property>
     <property name="title">
