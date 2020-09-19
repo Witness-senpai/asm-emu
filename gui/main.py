@@ -34,6 +34,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.previous_mem_item = None
 
         self.list_memory.setHeaderLabels(['addr','data'])
+        self.list_stack.setHeaderLabels(['SP','data'])
 
         # Init Assembler class
         self.assembler = Assembler()
@@ -85,7 +86,23 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         Updating stack in GUI according yo assembler state
         """
-        pass
+        print(self.assembler.stack)
+        self.list_stack.clear()
+        stack_items = []
+        for i, cmd in enumerate(self.assembler.stack):
+            cmd_item = QtWidgets.QTreeWidgetItem()
+            cmd_item.setText(0, hex(i).upper())
+            cmd_item.setText(1, hex(cmd).upper())
+            stack_items.append(cmd_item)
+        self.list_stack.addTopLevelItems(stack_items[::-1])
+
+        # Colorize current item
+        current_stack_item = self.list_stack.topLevelItem(
+            len(self.assembler.stack) - self.assembler.R['SP'] - 1
+        )
+        current_stack_item.setBackground(0, (self.qt_green_color))
+        current_stack_item.setBackground(1, (self.qt_green_color))
+
 
     def __update_memory(self, reset=False):
         """
@@ -113,7 +130,6 @@ class MainWindow(QtWidgets.QMainWindow):
             item.setBackground(0, (self.qt_white_color))
             item.setBackground(1, (self.qt_white_color))
 
-        
     def btn_step_click(self):
         """
         Button for executing program step by step
@@ -149,6 +165,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.btn_load.setEnabled(True)
         self.textEdit_input.setReadOnly(False)
         self.__update_gui_conponents(reset=True)
+        self.__load_program_to_mem()
     
     def btn_load_click(self):
         """
@@ -163,7 +180,8 @@ class MainWindow(QtWidgets.QMainWindow):
             if load_result == True:
                 self.textEdit_input.setReadOnly(True)
                 self.btn_load.setEnabled(False)
-                self.load_program_to_mem()
+                self.__load_program_to_mem()
+                self.__update_stack()
             else:
                 print(load_result)
                 msg = QtWidgets.QMessageBox()
@@ -173,9 +191,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 msg.setWindowTitle("Error")
                 msg.exec_()
     
-    def load_program_to_mem(self):
+    def __load_program_to_mem(self):
         print(self.assembler.compiled_cmds)
         cmd_items = []
+        self.list_memory.clear()
+        self.previous_mem_item = None
         for i, cmd in enumerate(self.assembler.memory):
             cmd_item = QtWidgets.QTreeWidgetItem()
             cmd_item.setText(0, hex(i).upper())
