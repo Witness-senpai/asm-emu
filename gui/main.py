@@ -36,6 +36,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.list_memory.setHeaderLabels(['addr', 'data', 'cmd'])
         self.list_stack.setHeaderLabels(['SP', 'data'])
 
+        self.textEdit_input.setLineWrapColumnOrWidth(200)
+
         # Init Assembler class
         self.assembler = Assembler()
     
@@ -102,7 +104,6 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         current_stack_item.setBackground(0, (self.qt_green_color))
         current_stack_item.setBackground(1, (self.qt_green_color))
-
 
     def __update_memory(self, reset=False):
         """

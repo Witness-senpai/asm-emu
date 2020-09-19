@@ -1,4 +1,4 @@
-;TEST ASSEMBLER PROGRAMM
+;TEST ASSEMBLER PROGRAM
 PUSH #0A ;Count of elements
 POP @F0
 PUSH #03 ;List of elements

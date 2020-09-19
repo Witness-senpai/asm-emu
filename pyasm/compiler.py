@@ -78,12 +78,15 @@ class Compiler:
                     + address_code
                     + register_code
                 )
-
         # Create valid cmd lines for GUI
         label = ''
         is_previos_label = False
         for line in self.valid_cmds:
-            self.valid_cmd_lines.append(''.join([f'{cmd[0]} ' for cmd in line]))
+            self.valid_cmd_lines.append(
+                ''.join([f'#{cmd[0]} ' 
+                    if cmd[1] == 'LITERAL' 
+                    else (f'@{cmd[0]} ' if cmd[1] == 'ADDR' else f'{cmd[0]} ')
+                        for cmd in line]))
             # Concatinete LABEL with next command
             if is_previos_label:
                 self.valid_cmd_lines[-1] = label + ' ' + self.valid_cmd_lines[-1]

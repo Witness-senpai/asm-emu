@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>804</width>
-    <height>542</height>
+    <width>880</width>
+    <height>543</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>490</x>
+      <x>560</x>
       <y>10</y>
       <width>151</width>
       <height>161</height>
@@ -177,7 +177,7 @@
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>650</x>
+      <x>720</x>
       <y>10</y>
       <width>151</width>
       <height>491</height>
@@ -919,38 +919,19 @@ QLCDNumber:hover {
      <rect>
       <x>0</x>
       <y>10</y>
-      <width>181</width>
+      <width>211</width>
       <height>351</height>
      </rect>
     </property>
     <property name="title">
      <string>Input program</string>
     </property>
-    <widget class="QPlainTextEdit" name="textEdit_input">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>20</y>
-       <width>161</width>
-       <height>281</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Consolas</family>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <property name="plainText">
-      <string/>
-     </property>
-    </widget>
     <widget class="QPushButton" name="btn_load">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>310</y>
-       <width>161</width>
+       <width>191</width>
        <height>30</height>
       </rect>
      </property>
@@ -984,11 +965,21 @@ QPushButton:pressed {
       <string>LOAD</string>
      </property>
     </widget>
+    <widget class="QTextEdit" name="textEdit_input">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>191</width>
+       <height>281</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_4">
     <property name="geometry">
      <rect>
-      <x>490</x>
+      <x>560</x>
       <y>170</y>
       <width>151</width>
       <height>171</height>
@@ -1099,7 +1090,7 @@ QPushButton:pressed {
    <widget class="QGroupBox" name="groupBox_5">
     <property name="geometry">
      <rect>
-      <x>490</x>
+      <x>560</x>
       <y>340</y>
       <width>151</width>
       <height>161</height>
@@ -1223,9 +1214,9 @@ QPushButton:pressed {
    <widget class="QGroupBox" name="groupBox_6">
     <property name="geometry">
      <rect>
-      <x>190</x>
+      <x>220</x>
       <y>10</y>
-      <width>291</width>
+      <width>331</width>
       <height>491</height>
      </rect>
     </property>
@@ -1240,7 +1231,7 @@ QPushButton:pressed {
       <rect>
        <x>10</x>
        <y>16</y>
-       <width>271</width>
+       <width>341</width>
        <height>461</height>
       </rect>
      </property>
@@ -1314,7 +1305,7 @@ QPushButton:pressed {
       <number>30</number>
      </attribute>
      <attribute name="headerDefaultSectionSize">
-      <number>80</number>
+      <number>100</number>
      </attribute>
      <attribute name="headerHighlightSections">
       <bool>false</bool>
@@ -1344,7 +1335,7 @@ QPushButton:pressed {
      <rect>
       <x>0</x>
       <y>360</y>
-      <width>181</width>
+      <width>211</width>
       <height>141</height>
      </rect>
     </property>
@@ -1358,7 +1349,7 @@ QPushButton:pressed {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>804</width>
+     <width>880</width>
      <height>21</height>
     </rect>
    </property>
