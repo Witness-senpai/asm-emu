@@ -31,7 +31,7 @@ class Assembler():
         Addresses for data: [FIRST_DATA_ADDRESS: 2**ADDRESS_LENGTH-1]
 
     Inputting RISC commands format:
-        X1_X2_X3_X4, 35 bits length
+        X1_X2_X3_X4, 43 bits length
         [0-7]   X1 -- code of command (see constants.py)
         [8-23]  X2 -- literal (Filling zeros if not using)
         [24-39] X3 -- address (Filling zeros if not using)

@@ -7,6 +7,7 @@ from .constants import (
     REGISTER_LENGTH,
 )
 
+
 class Compiler:
     """
     A Compiler class, that's translates valid command

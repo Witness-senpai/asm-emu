@@ -7,6 +7,6 @@ setup(
     name="pyasm",
     version="1.0",
     author="Darkovsky Ilya",
-    description="A Assembler compiler and interpritator",
+    description="A Assembler compiler",
     packages=find_packages(),
 )

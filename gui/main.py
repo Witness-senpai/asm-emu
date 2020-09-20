@@ -88,7 +88,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         Updating stack in GUI according yo assembler state
         """
-        print(self.assembler.stack)
+        #print(self.assembler.stack)
         self.list_stack.clear()
         stack_items = []
         for i, cmd in enumerate(self.assembler.stack):
@@ -109,7 +109,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         Updating memory in GUI according yo assembler state
         """
-        print(self.assembler.memory)
+        #print(self.assembler.memory)
         self.list_memory.clear()
         memory_items = []
         for i, cmd in enumerate(self.assembler.memory):
@@ -170,7 +170,7 @@ class MainWindow(QtWidgets.QMainWindow):
         Input programm from text field
         """
         text_program = self.textEdit_input.toPlainText()
-        print(text_program)
+        #print(text_program)
         if text_program != '':
             load_result = self.assembler.input_text_program(
                 text_program.upper()
