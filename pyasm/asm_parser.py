@@ -196,7 +196,7 @@ class Parser:
 
     def __arif_op(self):
         """
-        arif_op -> 'ADD' | 'SUB' | 'INC' | 'DEC' | 'MUL' | 'ADLC'
+        arif_op -> 'ADD' | 'SUB' | 'INC' | 'DEC' | 'MUL' | 'ADC'
         """
         if (
             self.__check_token_tag('ADD') or
@@ -204,7 +204,7 @@ class Parser:
             self.__check_token_tag('INC') or
             self.__check_token_tag('DEC') or
             self.__check_token_tag('MUL') or
-            self.__check_token_tag('ADLC')
+            self.__check_token_tag('ADC')
         ):
             return True
         return False
