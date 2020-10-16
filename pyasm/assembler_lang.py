@@ -183,6 +183,8 @@ class Assembler():
             self.__nope()
         elif cmd_code == 27:
             self.__mul()
+        elif cmd_code == 28:
+            self.__adlc()
 
     def execute_all_code(self):
         """
@@ -507,3 +509,10 @@ class Assembler():
                         address=0,
                         register=0,
                     )
+    
+    def __adlc(self):
+        """
+        Addition two last long numbers in stack.
+        Long number consist of 2 parts
+        """
+        pass

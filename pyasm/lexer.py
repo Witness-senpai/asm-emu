@@ -32,6 +32,7 @@ token_exprs = [
     (r'INC',                      "INC"),
     (r'DEC',                      "DEC"),
     (r'MUL',                      "MUL"),
+    (r'ADLC',                     "ADLC"),
  
     (r'SHL',                      "SHL"), # Shift left
     (r'SHR',                      "SHR"), # Shift right

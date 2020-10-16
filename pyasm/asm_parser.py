@@ -17,7 +17,7 @@ class Parser:
     pop -> 'POP' (addr | reg)
     push -> 'PUSH' (addr | literal | reg)
 
-    arif_op -> 'ADD' | 'SUB' | 'INC' | 'DEC' | 'MUL'
+    arif_op -> 'ADD' | 'SUB' | 'INC' | 'DEC' | 'MUL' | 'ADLC'
     log_op -> 'AND' | 'OR' | 'XOR' | 'NOR' | 'NOT'
     comp_op -> 'CMP'
     shift_op -> 'SHL' | 'SHR'
@@ -196,14 +196,15 @@ class Parser:
 
     def __arif_op(self):
         """
-        arif_op -> 'ADD' | 'SUB' | 'INC' | 'DEC' | 'MUL'
+        arif_op -> 'ADD' | 'SUB' | 'INC' | 'DEC' | 'MUL' | 'ADLC'
         """
         if (
             self.__check_token_tag('ADD') or
             self.__check_token_tag('SUB') or
             self.__check_token_tag('INC') or
             self.__check_token_tag('DEC') or
-            self.__check_token_tag('MUL')
+            self.__check_token_tag('MUL') or
+            self.__check_token_tag('ADLC')
         ):
             return True
         return False
