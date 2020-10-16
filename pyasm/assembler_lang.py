@@ -487,30 +487,27 @@ class Assembler():
     def __mul(self):
         """
         Multiply two last numbers in stack.
-        Result also pushing to the stack.
+        Result always has length 2*LITERAL_LENGTH.
         """
         op1 = self.__cmd_stack_pop()
         op2 = self.__cmd_stack_pop()
         res = int(str(op1), 0) * int(str(op2), 0)
-        # Overflow check
         self.__update_flags(res)
+        # Overflow check
         if not self.flags['O']:
+            junior_bits = res
+            senior_bits = 0
+        else:
+            junior_bits = int(bin(res)[2:][-LITERAL_LENGTH:], 2) 
+            senior_bits = int(bin(res)[2:][:LITERAL_LENGTH], 2)
+        for bits in [senior_bits, junior_bits]:
             self.__push(
-                    literal=res,
+                    literal=bits,
                     address=0,
                     register=0,
                 )
-        else:
-            junior_bits = int(bin(res)[2:][-LITERAL_LENGTH:], 2) 
-            senior_bits = int(bin(res)[2:][:LITERAL_LENGTH], 2) 
-            for bits in [senior_bits, junior_bits]:
-                self.__push(
-                        literal=bits,
-                        address=0,
-                        register=0,
-                    )
-            # Correction, because after 2 __push PC inc by 2   
-            self.R['PC'] -= 1
+        # Correction, because after 2 __push PC inc by 2   
+        self.R['PC'] -= 1
     
     def __adc(self):
         """

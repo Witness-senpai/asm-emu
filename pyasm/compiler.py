@@ -26,11 +26,13 @@ class Compiler:
         Compile all program to bynary code
         """
         # Detect all jumps
+        line_correction = 0
         for n_line, cmd_line in enumerate(self.valid_cmds):
             if cmd_line[0][1] == 'LABEL':
                 self.jumps.update({
-                    cmd_line[0][0]: n_line
-            })
+                    cmd_line[0][0]: n_line - line_correction
+                })
+                line_correction += 1
         # To bynary code
         for n_line, cmd_line in enumerate(self.valid_cmds):
             literal_code = ''.zfill(LITERAL_LENGTH)
