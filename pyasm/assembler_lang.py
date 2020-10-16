@@ -207,20 +207,10 @@ class Assembler():
         """
         if isinstance(res, str):
             res = int(res, 2)
-        if res == 0:
-            self.flags['Z'] = True
-        else:
-            self.flags['Z'] = False
-
-        if res < 0:
-            self.flags['S'] = True
-        else:
-            self.flags['S'] = False
-        
-        if res % 2 == 0:
-            self.flags['P'] = True
-        else:
-            self.flags['P'] = False
+        self.flags['Z'] = res == 0
+        self.flags['S'] = res < 0
+        self.flags['P'] = res % 2 == 0
+        self.flags['O'] = res >= 2 ** LITERAL_LENGTH
 
     def __add(self):
         """
@@ -497,13 +487,23 @@ class Assembler():
         Multiply two last numbers in stack.
         Result also pushing to the stack.
         """
-        # TODO: учесть переполнение и пушить в стек сразу младшие и старшие разряды
         op1 = self.__cmd_stack_pop()
         op2 = self.__cmd_stack_pop()
         res = int(str(op1), 0) * int(str(op2), 0)
+        # Overflow check
         self.__update_flags(res)
-        self.__push(
+        if not self.flags['O']:
+            self.__push(
                     literal=res,
                     address=0,
                     register=0,
                 )
+        else:
+            junior_bits = int(bin(res)[2:][LITERAL_LENGTH:], 2) 
+            senior_bits = int(bin(res)[2:][:LITERAL_LENGTH-1], 2) 
+            for bits in [senior_bits, junior_bits]:
+                self.__push(
+                        literal=bits,
+                        address=0,
+                        register=0,
+                    )
