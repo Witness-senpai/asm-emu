@@ -1,0 +1,121 @@
+;LAB2 -- two arrays folding 
+;X*Y = x1*y1 + x2*y2 + ... + xn*yn
+PUSH #05 ;Amount of numbers in both arrays
+POP @F0
+PUSH #03 ;List of array_1
+POP @F1
+PUSH #05
+POP @F2
+PUSH #0A
+POP @F3
+PUSH #10
+POP @F4
+PUSH #0B
+POP @F5
+PUSH #0F ;List of array_2
+POP @F6
+PUSH #11 
+POP @F7
+PUSH #0C
+POP @F8
+PUSH #19
+POP @F9
+PUSH #22
+POP @FA 
+
+PUSH @F0 ;Save number of numbers in both arrays
+POP R3
+PUSH #F1 ;Save first address of array_1 to R1
+POP R1
+PUSH #F6 ;Save second address of array_2 to R2
+POP R2
+
+
+NEXT:
+    PUSH @R1 ; Xx
+    PUSH @R2 ; Yy
+    MUL      ; Xx*Yy = Zz, stack -> zZ
+    PUSH R7  ; Push junior bits of result
+    ADD      ; ADD for junior bits of last sum and result numbers
+    POP R7   ; new z -> R7
+    PUSH R6
+    INC
+    DEC
+    JZ WOSB
+        PUSH R6  ; R -> stack
+        ADC      ; new R -> Z + R + Carry -- ADD for senior bits + Carry from junior bits
+        POP R6   ; new R -> R6
+    WOSB:
+        ; INC addreses and DEC amount of numbers 
+        PUSH R1
+        INC
+        POP R1
+        PUSH R2
+        INC
+        POP R2
+        PUSH R3
+        DEC
+        POP R3
+        NJZ NEXT
+
+
+; Rr -> result in R6, R7
+PUSH #01
+POP R7
+PUSH #03
+POP R6
+PUSH #FF ; Xx
+PUSH #FF ; Yy
+MUL      ; Xx*Yy = Zz, in stack zZ
+PUSH R7   ; r -> stack
+ADD      ; z + r -- ADD for junior bits
+POP R7   ; new z -> R7 
+PUSH R6  ; R -> stack
+ADC      ; new R -> Z + R + Carry -- ADD for senior bits + Carry from junior bits
+POP R6   ; new R -> R6
+
+
+
+
+POP R4   ; Z -> R4
+PUSH R7  ; 
+ADD      ; z + r -- ADD for junior bits
+POP R7
+PUSH R4 ; Z
+PUSH R6 ; R
+ADC     ; Z + R + Carry -- ADD for senior bits + Carry from junior bits
+
+;-----------
+
+
+
+
+
+
+
+
+PUSH R1  ;Dec current address
+DEC
+POP R1
+
+PUSH R3  ;Int count of number
+INC
+POP R3
+
+NEXT_MAX:
+    PUSH R1  ;Inc current address
+    INC
+    POP R1
+    PUSH R3  ;Dec count of numbers
+    DEC
+    POP R3
+    JZ END_PROGRAM
+    PUSH R2  ;Push current max number
+    PUSH @R1 ;Push current number from list
+    CMP      ;Compare
+    NJS NEXT_MAX ;If a new max -> next
+    PUSH @R1 ;Push new max to stack 
+    POP R2   ;Rewrite R2 with max
+    JMP NEXT_MAX
+END_PROGRAM:
+    NOPE

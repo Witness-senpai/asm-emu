@@ -184,7 +184,7 @@ class Assembler():
         elif cmd_code == 27:
             self.__mul()
         elif cmd_code == 28:
-            self.__adlc()
+            self.__adc()
 
     def execute_all_code(self):
         """
@@ -195,7 +195,6 @@ class Assembler():
             
     def __cmd_stack_push(self, el):
         self.stack[self.R['SP']] = el
-        self.__update_flags(el)
         self.R['SP'] += 1
 
     def __cmd_stack_pop(self):
@@ -212,6 +211,7 @@ class Assembler():
         self.flags['Z'] = res == 0
         self.flags['S'] = res < 0
         self.flags['P'] = res % 2 == 0
+        self.flags['C'] = 2 ** (LITERAL_LENGTH+1) >= res >= 2 ** LITERAL_LENGTH
         self.flags['O'] = res >= 2 ** LITERAL_LENGTH
 
     def __add(self):
@@ -501,18 +501,32 @@ class Assembler():
                     register=0,
                 )
         else:
-            junior_bits = int(bin(res)[2:][LITERAL_LENGTH:], 2) 
-            senior_bits = int(bin(res)[2:][:LITERAL_LENGTH-1], 2) 
+            junior_bits = int(bin(res)[2:][-LITERAL_LENGTH:], 2) 
+            senior_bits = int(bin(res)[2:][:LITERAL_LENGTH], 2) 
             for bits in [senior_bits, junior_bits]:
                 self.__push(
                         literal=bits,
                         address=0,
                         register=0,
                     )
+            # Correction, because after 2 __push PC inc by 2   
+            self.R['PC'] -= 1
     
-    def __adlc(self):
+    def __adc(self):
         """
-        Addition two last long numbers in stack.
-        Long number consist of 2 parts
-        """
-        pass
+        Addition tow last number in stack + Carry.
+        Result also pushing to the stack.
+        """        
+        op1 = self.__cmd_stack_pop()
+        op2 = self.__cmd_stack_pop()
+        res = int(str(op1), 0) + int(str(op2), 0) \
+            + (1 if self.flags['C'] else 0)
+        self.__update_flags(res)
+        # If carry, С->1, push only junior bits of number
+        if self.flags['C']:
+            res = int(bin(res)[2:][-LITERAL_LENGTH:], 2) 
+        self.__push(
+                    literal=res,
+                    address=0,
+                    register=0,
+                )
