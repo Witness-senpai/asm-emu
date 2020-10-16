@@ -1,4 +1,4 @@
-;TEST ASSEMBLER PROGRAM
+;LAB1 -- Find max number 
 PUSH #0A ;Count of elements
 POP @F0
 PUSH #03 ;List of elements
@@ -27,13 +27,13 @@ POP R1
 PUSH #00 ;Save max number to R2
 POP R2
 PUSH @F0 ;Save count of numbers
-POP R3 ;28
+POP R3
 
 PUSH R1  ;Dec current address
 DEC
 POP R1
 
-PUSH R3  ;Dec count of number
+PUSH R3  ;Int count of number
 INC
 POP R3
 

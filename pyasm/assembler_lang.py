@@ -181,6 +181,8 @@ class Assembler():
             self.__njo(new_pc=address)
         elif cmd_code == 26:
             self.__nope()
+        elif cmd_code == 27:
+            self.__mul()
 
     def execute_all_code(self):
         """
@@ -222,7 +224,7 @@ class Assembler():
 
     def __add(self):
         """
-        Addition of the last elements of the stack.
+        Addition of the last 2 elements of the stack.
         Result also pushing to the stack.
         """        
         op1 = self.__cmd_stack_pop()
@@ -237,7 +239,7 @@ class Assembler():
     
     def __sub(self):
         """
-        Subtraction of the last elements of the stack.
+        Subtraction of the last 2 elements of the stack.
         Result also pushing to the stack.
         """
         op1 = self.__cmd_stack_pop()
@@ -489,3 +491,19 @@ class Assembler():
         Skip clock and just increment PC
         """
         self.R['PC'] += 1
+    
+    def __mul(self):
+        """
+        Multiply two last numbers in stack.
+        Result also pushing to the stack.
+        """
+        # TODO: учесть переполнение и пушить в стек сразу младшие и старшие разряды
+        op1 = self.__cmd_stack_pop()
+        op2 = self.__cmd_stack_pop()
+        res = int(str(op1), 0) * int(str(op2), 0)
+        self.__update_flags(res)
+        self.__push(
+                    literal=res,
+                    address=0,
+                    register=0,
+                )
